@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Document</title>
+<style type="text/css">
+.point {width: 10px;height: 10px;background: blue;position: absolute;border-radius: 5px;}
+* {margin: 0;padding: 0;}
+.div {width: 100px;height: 100px;top: 0px;left: 0px;background: red;border-radius: 50px;position: absolute;}
+.div02 {top: 500px;left: 300px}
+</style>
+ <script type="text/javascript" src="js/jquery-1.11.2.js"></script> 
+<script type="text/javascript" src="js/base.js"></script>
+</head>
+<body>
+<div class="div div01" id="div01"></div>
+<div class="div div02"></div> 
+<script type="text/javascript">
+   var start = 0
+   function test(classNmae) {
+    var objDiv = $(".div01"),
+        objLeft = objDiv.offset().left,
+        objTop = objDiv.offset().top,
+        winHeight = $(window).height(),
+        winWidth = $(window).width(),
+        lastTop = winHeight - objDiv.height(),
+        lastLeft = winWidth - objDiv.width(),
+        bodyCon = $("body");
+    start++;
+    var top = Tween.Bounce.easeOut(start, objTop, lastTop - objTop, 2000);
+    var left = (top*top)/450;
+    objDiv.css({
+        top: top + 'px',
+        left: left + 'px'
+    });
+    var html = '<div class="point" style="left:'+left+'px;top:'+top+'px;"></div>';
+    bodyCon.append(html);
+    if(top < lastTop) {
+        Base.requestAnimationFrame(test);
+    } else {
+        Base.requestAnimationFrame(test,"stop");
+    }
+   }
+test();
+</script>
+</body>
+</html>

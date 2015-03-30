@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Document</title>
+<style type="text/css">
+* {margin: 0;padding: 0;}
+.target, .element { position: absolute; border: 1px solid #34538b; border-radius: 20px; }
+.target { width: 100px; height: 40px; background-color: #f0f3f9; right: 0px; top: 700px; cursor: move; }
+.element { width: 30px; height: 30px; background-color: #34538b; left: 500px; top: 300px; font-size: 12px; pointer-events: none; }
+.point {width: 10px;height: 10px;background: blue;position: absolute;border-radius: 5px;}
+
+</style>
+ <script type="text/javascript" src="js/jquery-1.11.2.js"></script> 
+<script type="text/javascript" src="js/base.js"></script>
+</head>
+<body>
+	<input type="button" value="click" id="btn_click" class="className">
+<div id="target" class="target"></div>
+<div id="element" class="element"></div>
+<script type="text/javascript">
+/* 元素 */
+var element = document.getElementById("element"), 
+    target = document.getElementById("target");
+// 抛物线元素的的位置标记
+function progress() {
+	var len = arguments.length;
+	if(len > 1) {
+		var left = arguments[0] + element.offsetLeft,
+			top = arguments[1] + element.offsetTop,
+			html = '<div class="point" style="left:'+left+'px;top:'+top+'px;"></div>',
+			bodyCon = $("body");
+		bodyCon.append(html);
+	}
+}
+var opt = {curvature : 0.001,progress:progress},
+	parabola = Base.funParabola(element, target,opt).mark();
+// 抛物线运动的触发
+var count = 0;
+document.getElementById('btn_click').onclick = function() {
+	//
+	if(count != 0) {
+		var left = Math.floor($(window).width() * Math.random()),
+			top = Math.floor($(window).height() * Math.random()); 
+		element.style.left = left + "px";
+		element.style.top = top + "px";
+	}
+    element.style.marginLeft = "0px";
+    element.style.marginTop = "0px";
+    count++;
+    $(".point").remove();
+    parabola.init();
+};
+</script>
+</body>
+</html>
