@@ -1,0 +1,10 @@
+@charset "utf-8";
+/* CSS Document */
+body {font-family:"华文细黑","Microsoft Yahei","微软雅黑","Helvetica Neue","Hiragino Sans GB",/*"Segoe UI",*/Tahoma,Arial,STHeiti,sans-serif;font-size:14px;line-height:1.5;word-wrap:break-word;word-break:break-all;background-color:#f3f3f3;}
+i,em {font-style:normal;}
+h1,h2,h3,h4,h5,h6,p,figcaption,ul,ol,small,dl,dt,dd{margin:0;padding:0;}
+h1,h2,h3,h4,h5,h6 {font-weight:normal;font-size:100%;}
+li {list-style:outside none none;}
+a:focus, a:active {outline:0;}
+input::-ms-clear{display:none;}
+input,textarea{outline:none} 

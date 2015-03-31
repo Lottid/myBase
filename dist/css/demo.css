@@ -1,0 +1,8 @@
+.point {width: 10px;height: 10px;background: blue;position: absolute;border-radius: 5px;}
+.div {width: 100px;height: 100px;top: 0px;left: 0px;background: red;border-radius: 50px;position: absolute;}
+.div02 {top: 500px;left: 300px}
+#con {width: 1000px;height: 600px;background: #f00;margin-left: 200px;}
+.target, .element { position: absolute; border: 1px solid #34538b; border-radius: 20px; }
+.target { width: 100px; height: 40px; background-color: #f0f3f9; right: 0px; top: 700px; cursor: move; }
+.element { width: 30px; height: 30px; background-color: #34538b; left: 500px; top: 300px; font-size: 12px; pointer-events: none; }
+.div01 {width:1000px;height: 1000px;background: red;background-position: 100px 10px;}
