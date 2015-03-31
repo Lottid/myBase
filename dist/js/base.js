@@ -532,7 +532,36 @@
             }
         }
     }
-    
+    /**
+     * [ready description]
+     * @return {[type]} [模拟ready]
+     */
+    Base.ready = function() {
+        var funs = arguments;
+        if (document.addEventListener) {
+            document.addEventListener("DOMContentLoaded", function() {
+                //注销事件，避免反复触发
+                document.removeEventListener("DOMContentLoaded", arguments.callee, false);
+                for (var i = 0; i < funs.length; i++) {
+                    if(Base.isFunction(funs[i])) {
+                        funs[i]();
+                    }
+                };
+            }, false);
+        } else if (document.attachEvent) {
+            document.attachEvent("onreadystatechange", function() {
+                if (document.readyState === "complete") {
+                    //注销事件，避免反复触发
+                    document.detachEvent("onreadystatechange", arguments.callee);
+                    for (var i = 0; i < funs.length; i++) {
+                        if(Base.isFunction(funs[i])) {
+                            funs[i]();
+                        }
+                    };
+                }
+            });
+        }
+    }
 });
 /*
  * Tween.js

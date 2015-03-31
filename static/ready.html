@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Document</title>
+<script type="text/javascript" src="../dist/js/base.js"></script>
+<script type="text/javascript">
+function testReady() {
+	var div = document.getElementById('div01');
+	console.log(div.id);
+}
+function test1Ready() {
+	var div = document.getElementById('div01');
+	console.log(div.className);
+}
+Base.ready(testReady,test1Ready);
+//Base.ready(testReady,test1Ready);
+</script>
+</head>
+<body>
+	<div id="div01" class="div01_class"></div>
+</body>
+</html>
