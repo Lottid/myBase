@@ -55,6 +55,7 @@
         if (isFlag == "stop") {
             window.cancelAnimationFrame(fn);
         }
+
     }
     /**
      * 拖拽
@@ -486,7 +487,7 @@
      * @param  {[type]}   target [目标dom]
      * @param  {[type]}   evt    [事件]
      * @param  {Function} fn     [函数]
-     * @return {[type]}          [description]
+     * @return {[type]}          [简易事件处理]
      */
     Base.event = function(elem, target, evt, fn) {
         if (!Base.isDOM(elem)) return;
@@ -500,11 +501,7 @@
         if (elem.addEventListener) {
             if (Base.isDOM(target)) {
                 elem.addEventListener(evt, function(event) {
-                    var theEvent = window.event || event,
-                        theTag = theEvent.target || theEvent.srcElement;
-                    if (theTag == target) {
-                        fn();
-                    }
+                    delege(event,fn);
                 }, false);
             } else {
                 elem.addEventListener(evt, fn, false)
@@ -512,11 +509,7 @@
         } else if (elem.attachEvent) {
             if (Base.isDOM(target)) {
                 elem.attachEvent("on" + evt, function(event) {
-                    var theEvent = window.event || event,
-                        theTag = theEvent.target || theEvent.srcElement;
-                    if (theTag == target) {
-                        fn();
-                    }
+                    delege(event,fn);
                 });
             } else {
                 elem.attachEvent("on" + evt, fn);
@@ -524,17 +517,22 @@
         } else {
             if (Base.isDOM(target)) {
                 elem["on" + evt] = function(event) {
-                    var theEvent = window.event || event,
-                        theTag = theEvent.target || theEvent.srcElement;
-                    if (theTag == target) {
-                        fn();
-                    }
+                    delege(event,fn);
                 }
             } else {
                elem["on" + evt] = fn;
             }
         }
+        //mouseenter mouseleave 貌似不能委托，以后再说
+        function delege(event,fn) {
+            var theEvent = window.event || event,
+                theTag = theEvent.target || theEvent.srcElement;
+            if (theTag == target) {
+                fn();
+            }
+        }
     }
+    
 });
 /*
  * Tween.js

@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Document</title>
+<link type="text/css" href="../dist/css/base.css"  rel="stylesheet"/>
+<link type="text/css" href="../dist/css/demo.css"  rel="stylesheet"/>
+<script type="text/javascript" src="../dist/js/base.js"></script>
+</head>
+<body>
+    <div class="div-click" id="div-click">
+        <input type="button" value="click" id="btnClick">
+    </div>
+<script type="text/javascript">
+var btnClick = document.getElementById('btnClick'),
+    divClick = document.getElementById("div-click");
+// Base.event(btnClick,"click",function() {
+//  alert("click" + "btnClick");
+// });
+Base.event(divClick,btnClick,"click",function() {
+    alert("click");
+});
+// Base.event(divClick,btnClick,"touchstart",function() {
+//  alert("click");
+// });
+</script>
+</body>
+</html>
