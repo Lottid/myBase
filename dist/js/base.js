@@ -337,7 +337,6 @@
                 }
             }
         }
-        //alert(hasBgp);
         if (obj.currentStyle) {
             return obj.currentStyle[attr];
         } else {
@@ -405,13 +404,15 @@
             if(Base.isEmptyObject(json)) {
                 isAllCompleted = true;
                 Base.requestAnimationFrame(timer,"stop");
+                if(Base.isFunction(fnEnd)) {
+                    fnEnd();
+                }
                 return this;
             } else {
                 Base.requestAnimationFrame(timer);
             }
         };
         timer();
-        
     };
     /**
      * 判断对象是否为空
@@ -430,6 +431,13 @@
      */
     Base.isFunction = function( obj ) {
         return typeof obj === "function";
+    }
+    /**
+     * 判断对象是否为String
+     * @param  obj ： 对象
+     */
+    Base.isString = function( obj ) {
+        return typeof obj === "string";
     }
     /**
      * [判断是否是数组]
@@ -472,7 +480,61 @@
         }
         return result;
     }
-
+    /**
+     * [event 事件函数]
+     * @param  {[type]}   elem   [委托dom或目标dom]
+     * @param  {[type]}   target [目标dom]
+     * @param  {[type]}   evt    [事件]
+     * @param  {Function} fn     [函数]
+     * @return {[type]}          [description]
+     */
+    Base.event = function(elem, target, evt, fn) {
+        if (!Base.isDOM(elem)) return;
+        if (!Base.isDOM(target) && Base.isString(target)) {
+            fn = evt;
+            evt = target;
+        }
+        if (!Base.isFunction(fn)) {
+            fn = function() {}
+        }
+        if (elem.addEventListener) {
+            if (Base.isDOM(target)) {
+                elem.addEventListener(evt, function(event) {
+                    var theEvent = window.event || event,
+                        theTag = theEvent.target || theEvent.srcElement;
+                    if (theTag == target) {
+                        fn();
+                    }
+                }, false);
+            } else {
+                elem.addEventListener(evt, fn, false)
+            }
+        } else if (elem.attachEvent) {
+            if (Base.isDOM(target)) {
+                elem.attachEvent("on" + evt, function(event) {
+                    var theEvent = window.event || event,
+                        theTag = theEvent.target || theEvent.srcElement;
+                    if (theTag == target) {
+                        fn();
+                    }
+                });
+            } else {
+                elem.attachEvent("on" + evt, fn);
+            }
+        } else {
+            if (Base.isDOM(target)) {
+                elem["on" + evt] = function(event) {
+                    var theEvent = window.event || event,
+                        theTag = theEvent.target || theEvent.srcElement;
+                    if (theTag == target) {
+                        fn();
+                    }
+                }
+            } else {
+               elem["on" + evt] = fn;
+            }
+        }
+    }
 });
 /*
  * Tween.js
