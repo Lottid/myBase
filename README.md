@@ -5,3 +5,4 @@ staic  静态html<br>
 dest   相关css，js，img文件<br>
 npm intall //grunt文件<br>
 grunt //进行压缩等<br>
+测试
