@@ -1,0 +1,14 @@
+#date_id { background:url(../../img/gyp_date_bg.jpg) no-repeat; width:400px; height:300px; margin:0 auto;}
+.date_top_area { background:url(../../img/gyp_date_top_bg.jpg) no-repeat; width:281px; height:54px; margin:0 auto;}
+.date_my_area { width:100%; height:20px; padding-top:10px; position:relative;}
+.date_my_txt { display:block; height:18px; margin:0 auto; color:#FFF; text-align:center; line-height:18px;}
+.gyp_date_left_btn { width:7px; height:10px; display:block; position:absolute; background:url(../../img/gyp_btn_left.jpg) no-repeat; top:14px; left:15px;}
+.gyp_date_right_btn { width:7px; height:10px; display:block; position:absolute; background:url(../../img/gyp_btn_right.jpg) no-repeat;top:14px; right:15px;}
+.date_st_area { height:18px; padding-left:1px;}
+.date_st_area li { display:block; width:40px; height:18px; line-height:18px; text-align:center; color:#FFF; float:left;}
+
+.date_con_area { width:281px; height:245px; background:url(../../img/gyp_date_days_bg.jpg) no-repeat; margin:0 auto;}
+.date_ul li { display:block; height:40px; width:40px; float:left; line-height:40px; text-align:center; cursor:pointer;}
+.date_days_li02 {background:url(../../img/gyp_date_today.jpg) no-repeat 1px 2px;}
+.date_days_li01 { color:#CCC;}
+.date_month {padding-right: 10px;}
