@@ -63,18 +63,18 @@
      * @param  limitElem  限制范围
      * @param  callback  回调
      */
-    Base.funDrag = function(element, limitElem,callback) {
+    Base.funDrag = function(element, limitElem, callback) {
         var params = {
             left: 0,
             top: 0,
             currentX: 0,
             currentY: 0,
             flag: false,
-            limitFlag : false
+            limitFlag: false
         };
         //相关判断
-        if(!Base.isDOM(element)) return;
-        if(limitElem && Base.isDOM(limitElem)) {
+        if (!Base.isDOM(element)) return;
+        if (limitElem && Base.isDOM(limitElem)) {
             params.limitFlag = true;
             var limitLeft = limitElem.offsetLeft,
                 limitTop = limitElem.offsetTop,
@@ -83,7 +83,7 @@
             element.style.left = limitLeft + "px";
             element.style.top = limitTop + "px";
         }
-        if(limitElem && Base.isFunction(limitElem)) {
+        if (limitElem && Base.isFunction(limitElem)) {
             callback = limitElem;
         }
         callback = callback || function() {};
@@ -120,19 +120,19 @@
                     disY = nowY - params.currentY;
                 var finLeft = parseInt(params.left) + disX,
                     finRight = parseInt(params.top) + disY;
-                if(params.limitFlag) {
+                if (params.limitFlag) {
                     var elemWidth = element.offsetWidth,
                         elemHeight = element.offsetHeight;
-                    if((finLeft + elemWidth) >= limitMaxLeft) {
+                    if ((finLeft + elemWidth) >= limitMaxLeft) {
                         finLeft = limitMaxLeft - elemWidth;
                     }
-                    if(finLeft < limitLeft) {
+                    if (finLeft < limitLeft) {
                         finLeft = limitLeft;
                     }
-                    if((finRight + elemHeight) >= limitMaxTop) {
+                    if ((finRight + elemHeight) >= limitMaxTop) {
                         finRight = limitMaxTop - elemHeight;
                     }
-                    if(finRight < limitTop) {
+                    if (finRight < limitTop) {
                         finRight = limitTop;
                     }
                 }
@@ -325,15 +325,15 @@
     Base.getStyle = function(obj, attr) {
         var hasBgp = attr.indexOf("background-position-");
         //兼容Firefox获取 背景图位置
-        if(hasBgp != -1) {
-            if(!obj.currentStyle) {
+        if (hasBgp != -1) {
+            if (!obj.currentStyle) {
                 var poxy = getComputedStyle(obj, false)["background-position"],
                     arr = [];
                 arr = poxy.split(" ");
-                if(attr == 'background-position-x') {
+                if (attr == 'background-position-x') {
                     return arr[0];
                 }
-                if(attr == 'background-position-y') {
+                if (attr == 'background-position-y') {
                     return arr[1];
                 }
             }
@@ -349,7 +349,7 @@
      * @param  obj：   运动物体
      * @param  json：  运动属性和运动目标值的json集合，{width:200,height:200}
      * @param  sv：    运动的速度，speed-value,值越小速度越大
-     * @param  fnEnd： 运动结束后的回调函数   
+     * @param  fnEnd： 运动结束后的回调函数
      */
     Base.move = function(obj, json, sv, fnEnd) {
         //运动开始          
@@ -366,6 +366,7 @@
                     recdJson[attr] = attrValue;
             }
         };
+
         function timer() {
             for (attr in json) {
                 var attrValue = 0,
@@ -385,7 +386,7 @@
                 //如果循环过程中存在尚未结束的运动，isAllCompleted为假
                 if (attrValue != nowVal) {
                     isAllCompleted = false;
-                    if(Math.abs(nowVal - attrValue) <= Math.abs(speed)) {
+                    if (Math.abs(nowVal - attrValue) <= Math.abs(speed)) {
                         attrValue = nowVal;
                         speed = 0;
                         delete json[attr];
@@ -401,11 +402,11 @@
                             obj.style[attr] = attrValue + speed + 'px';
                     }
                 }
-            } 
-            if(Base.isEmptyObject(json)) {
+            }
+            if (Base.isEmptyObject(json)) {
                 isAllCompleted = true;
-                Base.requestAnimationFrame(timer,"stop");
-                if(Base.isFunction(fnEnd)) {
+                Base.requestAnimationFrame(timer, "stop");
+                if (Base.isFunction(fnEnd)) {
                     fnEnd();
                 }
                 return this;
@@ -419,9 +420,9 @@
      * 判断对象是否为空
      * @param  obj ： 对象
      */
-    Base.isEmptyObject = function( obj ) {
+    Base.isEmptyObject = function(obj) {
         var name;
-        for ( name in obj ) {
+        for (name in obj) {
             return false;
         }
         return true;
@@ -430,21 +431,21 @@
      * 判断对象是否为fun
      * @param  obj ： 对象
      */
-    Base.isFunction = function( obj ) {
+    Base.isFunction = function(obj) {
         return typeof obj === "function";
     }
     /**
      * 判断对象是否为String
      * @param  obj ： 对象
      */
-    Base.isString = function( obj ) {
+    Base.isString = function(obj) {
         return typeof obj === "string";
     }
     /**
      * [判断是否是数组]
      * @param  {[type]} obj [目标数组]
      */
-    Base.isArray = Array.isArray || function( obj ) {
+    Base.isArray = Array.isArray || function(obj) {
         return Object.prototype.toString.call(obj) === '[object Array]';
     }
     /**
@@ -453,7 +454,7 @@
      * @return {Boolean}     [description]
      */
     Base.isDOM = function(dom) {
-        if(typeof HTMLElement === 'object') {
+        if (typeof HTMLElement === 'object') {
             var result = function(dom) {
                 return dom instanceof HTMLElement;
             }
@@ -469,7 +470,7 @@
      * @param  {[type]} arr [目标数组]
      */
     Base.arrUnique = function(arr) {
-        if(!Base.isArray(arr)) return ;
+        if (!Base.isArray(arr)) return;
         var result = [],
             hash = {};
         for (var i = 0, elem;
@@ -501,7 +502,7 @@
         if (elem.addEventListener) {
             if (Base.isDOM(target)) {
                 elem.addEventListener(evt, function(event) {
-                    delege(event,fn);
+                    delege(event, fn);
                 }, false);
             } else {
                 elem.addEventListener(evt, fn, false)
@@ -509,7 +510,7 @@
         } else if (elem.attachEvent) {
             if (Base.isDOM(target)) {
                 elem.attachEvent("on" + evt, function(event) {
-                    delege(event,fn);
+                    delege(event, fn);
                 });
             } else {
                 elem.attachEvent("on" + evt, fn);
@@ -517,14 +518,15 @@
         } else {
             if (Base.isDOM(target)) {
                 elem["on" + evt] = function(event) {
-                    delege(event,fn);
+                    delege(event, fn);
                 }
             } else {
-               elem["on" + evt] = fn;
+                elem["on" + evt] = fn;
             }
         }
         //mouseenter mouseleave 貌似不能委托，以后再说
-        function delege(event,fn) {
+
+        function delege(event, fn) {
             var theEvent = window.event || event,
                 theTag = theEvent.target || theEvent.srcElement;
             if (theTag == target) {
@@ -538,28 +540,80 @@
      */
     Base.ready = function() {
         var funs = arguments;
-        if (document.addEventListener) {
-            document.addEventListener("DOMContentLoaded", function() {
-                //注销事件，避免反复触发
-                document.removeEventListener("DOMContentLoaded", arguments.callee, false);
-                for (var i = 0; i < funs.length; i++) {
-                    if(Base.isFunction(funs[i])) {
-                        funs[i]();
-                    }
-                };
-            }, false);
-        } else if (document.attachEvent) {
-            document.attachEvent("onreadystatechange", function() {
-                if (document.readyState === "complete") {
+        //是否依赖require
+        if (require) {
+            runJs();
+        } else if (document.readyState === "complete") {//已加载完成
+            runJs();
+        } else {
+            if (document.addEventListener) {
+                document.addEventListener("DOMContentLoaded", function() {
                     //注销事件，避免反复触发
-                    document.detachEvent("onreadystatechange", arguments.callee);
-                    for (var i = 0; i < funs.length; i++) {
-                        if(Base.isFunction(funs[i])) {
-                            funs[i]();
-                        }
-                    };
+                    document.removeEventListener("DOMContentLoaded", arguments.callee, false);
+                    runJs();
+                }, false);
+            } else if (document.attachEvent) {
+                document.attachEvent("onreadystatechange", function() {
+                    if (document.readyState === "complete") {
+                        //注销事件，避免反复触发
+                        document.detachEvent("onreadystatechange", arguments.callee);
+                        runJs();
+                    }
+                });
+            }
+        }
+        //执行函数
+        function runJs() {
+            for (var i = 0; i < funs.length; i++) {
+                if (Base.isFunction(funs[i])) {
+                    funs[i]();
                 }
-            });
+            };
+        }
+    }
+    /**
+     * [writePath description]
+     * @param  {[type]} 写入类型【js，css】
+     * @param  {[type]} 路径
+     * @param  {[type]} 写入后的调用方法
+     * @return {[type]}
+     */
+    Base.writePath = function(type, url, arrFun) {
+        var head = document.getElementsByTagName('head')[0];
+        if (type == "js") {
+            var node = document.createElement('script');
+            node.type = 'text/javascript',
+            node.charset = 'utf-8',
+            node.onload = node.onreadystatechange = function() {
+                if (!this.readyState || this.readyState === "loaded" || this.readyState === "complete") {
+                    //根据方法名，执行回调方法
+                    if (arrFun) {
+                        for (var i = 0; i < arrFun.length; i++) {
+                            var thisFunction = new Function(arrFun[i] + "();");
+                            try {
+                                thisFunction();
+                            } catch (e) {
+                                if (window.console) {
+                                    console.log("该方法不存在！");
+                                } else {
+                                    alert("该方法不存在！");
+                                }
+                            }
+                        };
+                    }
+                    //ie缓存
+                    node.onload = node.onreadystatechange = null;
+                }
+            };
+            node.src = url;
+            head.appendChild(node);
+        }
+        if (type == "css") {
+            var node = document.createElement('link');
+            node.href = url;
+            node.rel = 'stylesheet';
+            node.type = 'text/css';
+            head.appendChild(node);
         }
     }
 });
