@@ -513,24 +513,20 @@
                     delege(event, fn);
                 });
             } else {
-                elem.attachEvent("on" + evt, fn);
+                elem.attachEvent('on' + evt, function(){
+                    fn.call(elem, window.event);
+                });
             }
         } else {
-            if (Base.isDOM(target)) {
-                elem["on" + evt] = function(event) {
-                    delege(event, fn);
-                }
-            } else {
-                elem["on" + evt] = fn;
-            }
+            //貌似一般走不到这里。走到这里，事件委托，我也不会了
+            elem["on" + evt] = fn;
+            
         }
-        //mouseenter mouseleave 貌似不能委托，以后再说
-
         function delege(event, fn) {
             var theEvent = window.event || event,
                 theTag = theEvent.target || theEvent.srcElement;
             if (theTag == target) {
-                fn();
+                fn.call(theTag, theEvent); //fn方法应用到theTag上面
             }
         }
     }
