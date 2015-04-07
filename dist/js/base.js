@@ -518,8 +518,14 @@
                 });
             }
         } else {
-            //貌似一般走不到这里。走到这里，事件委托，我也不会了
-            elem["on" + evt] = fn;
+            //貌似一般走不到这里。走到这里，事件委托，我也不会了,不知是不是这么写
+            if (Base.isDOM(target)) {
+                elem["on" + evt] = function(event) {
+                    delege(event, fn);
+                }
+            } else {
+                elem["on" + evt] = fn;
+            }
             
         }
         function delege(event, fn) {
