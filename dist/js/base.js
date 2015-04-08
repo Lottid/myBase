@@ -55,7 +55,6 @@
         if (isFlag == "stop") {
             window.cancelAnimationFrame(fn);
         }
-
     }
     /**
      * 拖拽
@@ -74,14 +73,20 @@
         };
         //相关判断
         if (!Base.isDOM(element)) return;
-        if (limitElem && Base.isDOM(limitElem)) {
+        if (limitElem) {
+            if (Base.isDOM(limitElem)) {
+                var limitLeft = limitElem.offsetLeft,
+                    limitTop = limitElem.offsetTop,
+                    limitMaxLeft = limitElem.offsetWidth + limitLeft,
+                    limitMaxTop = limitElem.offsetHeight + limitTop;
+            }
+            if (limitElem == document) {
+                var limitLeft = 0,
+                    limitTop = 0,
+                    limitMaxLeft = document.documentElement.clientWidth + limitLeft,
+                    limitMaxTop = document.documentElement.clientHeight + limitTop;
+            }
             params.limitFlag = true;
-            var limitLeft = limitElem.offsetLeft,
-                limitTop = limitElem.offsetTop,
-                limitMaxLeft = limitElem.offsetWidth + limitLeft,
-                limitMaxTop = limitElem.offsetHeight + limitTop;
-            element.style.left = limitLeft + "px";
-            element.style.top = limitTop + "px";
         }
         if (limitElem && Base.isFunction(limitElem)) {
             callback = limitElem;
@@ -91,17 +96,31 @@
         if (Base.getStyle(element, "left") !== "auto") {
             params.left = Base.getStyle(element, "left");
         }
+        if (Base.getStyle(element, "left") == "auto") { 
+            params.left = element.offsetLeft;
+        }
         if (Base.getStyle(element, "top") !== "auto") {
             params.top = Base.getStyle(element, "top");
         }
-        //o是移动对象
-        element.onmousedown = function(event) {
+        if (Base.getStyle(element, "top") == "auto") { 
+            params.left = element.offsetTop;
+        }
+        var dragDown = function(event) {
+            console.log("down");
             params.flag = true;
             event = event || window.event;
-            params.currentX = event.clientX;
-            params.currentY = event.clientY;
-        };
-        document.onmouseup = function() {
+            var touch = event.touches ? event.touches[0] : {};
+            params.currentX = touch.clientX || event.clientX;
+            params.currentY = touch.clientY || event.clientY;
+            Base.event(document, "touchend", dragUp);
+            Base.event(document, "touchmove", dragMove);
+            Base.event(document, "mouseup", dragUp);
+            Base.event(document, "mousemove", dragMove);
+        }
+        Base.event(element, "touchstart", dragDown);
+        Base.event(element, "mousedown", dragDown);
+        var dragUp = function() {
+            console.log("up");
             params.flag = false;
             if (Base.getStyle(element, "left") !== "auto") {
                 params.left = Base.getStyle(element, "left");
@@ -110,12 +129,19 @@
                 params.top = Base.getStyle(element, "top");
             }
             callback();
-        };
-        document.onmousemove = function(event) {
+            Base.removeEvent(document, "touchend", dragUp);
+            Base.removeEvent(document, "touchmove", dragMove);
+            Base.removeEvent(document, 'mousemove', dragMove);
+            Base.removeEvent(document, 'mouseup', dragUp);
+            return false;
+        }
+        var dragMove = function(event) {
+            console.log("move");
             event = event || window.event;
             if (params.flag) {
-                var nowX = event.clientX,
-                    nowY = event.clientY;
+                var touch = event.touches ? event.touches[0] : {};
+                var nowX = touch.clientX || event.clientX,
+                    nowY = touch.clientY || event.clientY;
                 var disX = nowX - params.currentX,
                     disY = nowY - params.currentY;
                 var finLeft = parseInt(params.left) + disX,
@@ -494,7 +520,7 @@
      * @return {[type]}          [简易事件处理]
      */
     Base.event = function(elem, target, evt, fn) {
-        if (!Base.isDOM(elem)) return;
+        if (!Base.isDOM(elem) && elem != document) return;
         if (!Base.isDOM(target) && Base.isString(target)) {
             fn = evt;
             evt = target;
@@ -540,15 +566,31 @@
         }
     }
     /**
+     * [removeEvent description]
+     * @param  {[type]}   obj  [description]
+     * @param  {[type]}   type [description]
+     * @param  {Function} fn   [description]
+     * @return {[type]}        [description]
+     */
+    Base.removeEvent = function(obj, type, fn) {
+        if (obj.removeEventListener)
+            obj.removeEventListener(type, fn, false);
+        else if (obj.detachEvent) {
+            obj.detachEvent("on" + type, obj["e" + type + fn]);
+            obj["e" + type + fn] = null;
+        }
+    };
+    /**
      * [ready description]
      * @return {[type]} [模拟ready]
      */
     Base.ready = function() {
         var funs = arguments;
         //是否依赖require
+        var require = require || false
         if (require) {
             runJs();
-        } else if (document.readyState === "complete") {//已加载完成
+        } else if (document.readyState === "complete") { //已加载完成
             runJs();
         } else {
             if (document.addEventListener) {
@@ -568,6 +610,7 @@
             }
         }
         //执行函数
+
         function runJs() {
             for (var i = 0; i < funs.length; i++) {
                 if (Base.isFunction(funs[i])) {
@@ -621,11 +664,83 @@
             head.appendChild(node);
         }
     }
-<<<<<<< HEAD
     //touch 相关
     Base.hasTouch = ('ontouchstart' in window);
-    
+    Base.transform = function(elem) {
+        var transform = Base.getStyle(elem, "transform");
+        var transformX,
+            transformY,
+            transformArr = [];
+        var matrix = transform.split('(')[1].split(')')[0].split(',');
+        if (matrix.length == 6) {
+            transformX = matrix[4];
+            transformY = matrix[5];
+            transformArr.push(transformX);
+            transformArr.push(transformY);
+        } else if (matrix.length == 16) {
+            transformX = matrix[12];
+            transformY = matrix[13];
+            transformZ = matrix[14];
+            transformArr.push(transformX);
+            transformArr.push(transformY);
+        } 
+        return transformArr;
+    }
+    Base.swipe = function(elem, swipeFlag, fun) {
+        var transformArr = Base.transform(elem),
+            transformX = transformArr[0],
+            transformY = transformArr[1];
+        var params = {
+            left: transformX,
+            top: transformY,
+            currentX: 0,
+            currentY: 0,
+            flag: false,
+            limitFlag: false
+        };
+        var dragDown = function(event) {
+            console.log("down");
+            params.flag = true;
+            event = event || window.event;
+            var touch = event.touches ? event.touches[0] : {};
+            params.currentX = touch.clientX || event.clientX;
+            params.currentY = touch.clientY || event.clientY;
+            Base.event(document, "touchend", dragUp);
+            Base.event(document, "touchmove", dragMove);
+            Base.event(document, "mousemove", dragMove);
+            Base.event(document, "mouseup", dragUp);
+        }
+        var dragMove = function(event) {
+            console.log("move");
+            event = event || window.event;
+            if (params.flag) {
+                var touch = event.touches ? event.touches[0] : {};
+                var nowX = touch.clientX || event.clientX,
+                    nowY = touch.clientY || event.clientY;
+                var disX = nowX - params.currentX,
+                    disY = nowY - params.currentY;
+                var finLeft = parseInt(params.left) + disX,
+                    finRight = parseInt(params.top) + disY;
+                elem.style.transform = "matrix(1, 0, 0, 1, "+finLeft+", "+finRight+")";
+            }
+        }
+        var dragUp = function() {
+            console.log("up");
+            params.flag = false;
+            var transformArr = Base.transform(elem),
+            transformX = transformArr[0],
+            transformY = transformArr[1];
+            params.left = transformX;
+            params.top = transformY;
+            //callback();
+            Base.removeEvent(document, "touchend", dragUp);
+            Base.removeEvent(document, "touchmove", dragMove);
+            Base.removeEvent(document, 'mousemove', dragMove);
+            Base.removeEvent(document, 'mouseup', dragUp);
+            return false;
+        }
+        Base.event(elem, "touchstart", dragDown);
+        Base.event(elem, "mousedown", dragDown);
+        // elem.style.transform = "matrix(1, 0, 0, 1, "+transformX+", "+transformY+")";
+    }
 });
-=======
-});
->>>>>>> origin/master
