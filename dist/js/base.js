@@ -427,26 +427,29 @@
         }
         return true;
     }
+    Base.getType = function(obj) {
+        return Object.prototype.toString.call(obj).match(/\s([a-z|A-Z]+)/)[1].toLowerCase();
+    };
     /**
      * 判断对象是否为fun
      * @param  obj ： 对象
      */
     Base.isFunction = function(obj) {
-        return typeof obj === "function";
+        return Base.getType(obj) === "function";
     }
     /**
      * 判断对象是否为String
      * @param  obj ： 对象
      */
     Base.isString = function(obj) {
-        return typeof obj === "string";
+        return Base.getType(obj) === "string";
     }
     /**
      * [判断是否是数组]
      * @param  {[type]} obj [目标数组]
      */
     Base.isArray = Array.isArray || function(obj) {
-        return Object.prototype.toString.call(obj) === '[object Array]';
+        return Base.getType(obj) === 'array';
     }
     /**
      * [isDOM 检测是否是dom]
@@ -616,4 +619,7 @@
             head.appendChild(node);
         }
     }
+    //touch 相关
+    Base.hasTouch = ('ontouchstart' in window);
+    
 });
