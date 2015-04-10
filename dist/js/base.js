@@ -106,21 +106,21 @@
             params.left = element.offsetTop;
         }
         var dragDown = function(event) {
-            console.log("down");
+            Base.stopDefault(event);
             params.flag = true;
             event = event || window.event;
             var touch = event.touches ? event.touches[0] : {};
             params.currentX = touch.clientX || event.clientX;
             params.currentY = touch.clientY || event.clientY;
-            Base.event(document, "touchend", dragUp);
-            Base.event(document, "touchmove", dragMove);
-            Base.event(document, "mouseup", dragUp);
             Base.event(document, "mousemove", dragMove);
+            Base.event(document, "touchmove", dragMove);
+            Base.event(element, "mouseup", dragUp);
+            Base.event(element, "touchend", dragUp);
         }
         Base.event(element, "touchstart", dragDown);
         Base.event(element, "mousedown", dragDown);
-        var dragUp = function() {
-            console.log("up");
+        var dragUp = function(event) {
+            Base.stopDefault(event);
             params.flag = false;
             if (Base.getStyle(element, "left") !== "auto") {
                 params.left = Base.getStyle(element, "left");
@@ -128,15 +128,16 @@
             if (Base.getStyle(element, "top") !== "auto") {
                 params.top = Base.getStyle(element, "top");
             }
-            callback();
-            Base.removeEvent(document, "touchend", dragUp);
+            //callback();
+            callback.call(elem, event);
             Base.removeEvent(document, "touchmove", dragMove);
             Base.removeEvent(document, 'mousemove', dragMove);
-            Base.removeEvent(document, 'mouseup', dragUp);
+            Base.removeEvent(element, "touchend", dragUp);
+            Base.removeEvent(element, 'mouseup', dragUp);
             return false;
         }
         var dragMove = function(event) {
-            console.log("move");
+            Base.stopDefault(event);
             event = event || window.event;
             if (params.flag) {
                 var touch = event.touches ? event.touches[0] : {};
@@ -350,6 +351,7 @@
      */
     Base.getStyle = function(obj, attr) {
         var hasBgp = attr.indexOf("background-position-");
+        if(!Base.isDOM(obj)) return;
         //兼容Firefox获取 背景图位置
         if (hasBgp != -1) {
             if (!obj.currentStyle) {
@@ -392,7 +394,6 @@
                     recdJson[attr] = attrValue;
             }
         };
-
         function timer() {
             for (attr in json) {
                 var attrValue = 0,
@@ -531,39 +532,74 @@
         if (elem.addEventListener) {
             if (Base.isDOM(target)) {
                 elem.addEventListener(evt, function(event) {
-                    delege(event, fn);
+                    delege(event, target,fn);
                 }, false);
             } else {
-                elem.addEventListener(evt, fn, false)
+                elem.addEventListener(evt, fn, false);
+                var ev = document.createEvent("HTMLEvents");
+                ev.initEvent(evt, false, false);
+                if (!elem["ev" + evt]) {
+                    elem["ev" + evt] = ev;
+                }
             }
         } else if (elem.attachEvent) {
             if (Base.isDOM(target)) {
                 elem.attachEvent("on" + evt, function(event) {
-                    delege(event, fn);
+                    delege(event, target,fn);
                 });
             } else {
                 elem.attachEvent('on' + evt, function(){
                     fn.call(elem, window.event);
                 });
+                if (isNaN(elem["cu" + evt])) {
+                // 自定义属性，触发事件用
+                    elem["cu" + evt] = 0;
+                }
+                var fnEv = function(event) {
+                    if (event.propertyName == "cu" + evt) {
+                        fn.call(elem);
+                    }
+                };
+                elem.attachEvent("onpropertychange", fnEv);
+                // 在元素上存储绑定的propertychange事件，方便删除
+                if (!elem["ev" + evt]) {
+                    elem["ev" + evt] = [fnEv];
+                } else {
+                    elem["ev" + evt].push(fnEv);
+                }
             }
         } else {
             //貌似一般走不到这里。走到这里，事件委托，我也不会了,不知是不是这么写
             if (Base.isDOM(target)) {
                 elem["on" + evt] = function(event) {
-                    delege(event, fn);
+                    delege(event, target,fn);
                 }
             } else {
                 elem["on" + evt] = fn;
             }
-            
         }
-        function delege(event, fn) {
+        function delege(event, target,fn) {
             var theEvent = window.event || event,
                 theTag = theEvent.target || theEvent.srcElement;
+            if (!Base.isDOM(target) && Base.isString(target)) {
+                fn = evt;
+            }
             if (theTag == target) {
                 fn.call(theTag, theEvent); //fn方法应用到theTag上面
             }
         }
+    }
+    Base.fireEvent = function(elem,evt) {
+        if (typeof evt === "string") {
+            if (document.dispatchEvent) {
+                if (elem["ev" + evt]) {
+                    elem.dispatchEvent(elem["ev" + evt]);
+                }
+            } else if (document.attachEvent) {
+                // 改变对应自定义属性，触发自定义事件
+                elem["cu" + evt]++;
+            }    
+        }    
     }
     /**
      * [removeEvent description]
@@ -578,7 +614,15 @@
         else if (obj.detachEvent) {
             obj.detachEvent("on" + type, obj["e" + type + fn]);
             obj["e" + type + fn] = null;
+            var arrEv = obj["ev" + type];
+            if (arrEv instanceof Array) {
+                for (var i=0; i<arrEv.length; i+=1) {
+                    // 删除该方法名下所有绑定的propertychange事件
+                    obj.detachEvent("onpropertychange", arrEv[i]);
+                }
+            }
         }
+
     };
     /**
      * [ready description]
@@ -666,27 +710,52 @@
     }
     //touch 相关
     Base.hasTouch = ('ontouchstart' in window);
+    /**
+     * [transform 获取transform的X，Y]
+     * @param  {[type]} elem [description]
+     * @return {[type]}      [description]
+     */
     Base.transform = function(elem) {
-        var transform = Base.getStyle(elem, "transform");
-        var transformX,
+        var transform = Base.getStyle(elem, "transform"),
+            transformX,
             transformY,
             transformArr = [];
-        var matrix = transform.split('(')[1].split(')')[0].split(',');
-        if (matrix.length == 6) {
-            transformX = matrix[4];
-            transformY = matrix[5];
-            transformArr.push(transformX);
-            transformArr.push(transformY);
-        } else if (matrix.length == 16) {
-            transformX = matrix[12];
-            transformY = matrix[13];
-            transformZ = matrix[14];
-            transformArr.push(transformX);
-            transformArr.push(transformY);
-        } 
+        if(transform == "none" || transform == undefined) {
+            transformArr.push(0);
+            transformArr.push(0);
+        }else {
+            var matrix = transform.split('(')[1].split(')')[0].split(',');
+            if (matrix.length == 6) {
+                transformX = matrix[4];
+                transformY = matrix[5];
+                transformArr.push(transformX);
+                transformArr.push(transformY);
+            } else if (matrix.length == 16) {
+                transformX = matrix[12];
+                transformY = matrix[13];
+                transformZ = matrix[14];
+                transformArr.push(transformX);
+                transformArr.push(transformY);
+            }
+        }
         return transformArr;
     }
-    Base.swipe = function(elem, swipeFlag, fun) {
+    /**
+     * [stopDefault 阻止浏览器冒泡行为]
+     * @param  {[type]} e [description]
+     * @return {[type]}   [description]
+     */
+    Base.stopDefault = function(e) { 
+        //阻止默认浏览器动作(W3C) 
+        if ( e && e.preventDefault ) {
+            e.preventDefault(); 
+        }
+        else {//IE中阻止函数器默认动作的方式 
+            window.event.returnValue = false; 
+        }
+        return false; 
+    }
+    Base.touch = function(elem, swipeFlag, fun) {
         var transformArr = Base.transform(elem),
             transformX = transformArr[0],
             transformY = transformArr[1];
@@ -695,11 +764,14 @@
             top: transformY,
             currentX: 0,
             currentY: 0,
-            flag: false,
-            limitFlag: false
+            flag: false
         };
+        var evebts = [];
+        if (!Base.isFunction(fun)) {
+            fun = function() {}
+        }
         var dragDown = function(event) {
-            console.log("down");
+            Base.stopDefault(event);
             params.flag = true;
             event = event || window.event;
             var touch = event.touches ? event.touches[0] : {};
@@ -707,11 +779,11 @@
             params.currentY = touch.clientY || event.clientY;
             Base.event(document, "touchend", dragUp);
             Base.event(document, "touchmove", dragMove);
-            Base.event(document, "mousemove", dragMove);
-            Base.event(document, "mouseup", dragUp);
+            Base.event(elem, "mousemove", dragMove);
+            Base.event(elem, "mouseup", dragUp);
         }
         var dragMove = function(event) {
-            console.log("move");
+            Base.stopDefault(event);
             event = event || window.event;
             if (params.flag) {
                 var touch = event.touches ? event.touches[0] : {};
@@ -719,28 +791,56 @@
                     nowY = touch.clientY || event.clientY;
                 var disX = nowX - params.currentX,
                     disY = nowY - params.currentY;
+                switch (swipeFlag) {
+                    case "swipeLeft":
+                        if(disX > 0) {
+                            disX = 0;
+                        }
+                        disY = 0;
+                        break;
+                    case "swipeRight":
+                        if(disX < 0) {
+                            disX = 0;
+                        }
+                        disY = 0;
+                        break;
+                    case "swipeUp":
+                        if(disY > 0) {
+                            disY = 0;
+                        }
+                        disX = 0;
+                        break;
+                    case "swipeDown":
+                        if(disY < 0) {
+                            disY = 0;
+                        }
+                        disX = 0;
+                        break;
+                    default:
+                        disX = disX,
+                        disY = disY;
+                }
                 var finLeft = parseInt(params.left) + disX,
                     finRight = parseInt(params.top) + disY;
                 elem.style.transform = "matrix(1, 0, 0, 1, "+finLeft+", "+finRight+")";
             }
         }
-        var dragUp = function() {
-            console.log("up");
+        var dragUp = function(event) {
+            Base.stopDefault(event);
             params.flag = false;
             var transformArr = Base.transform(elem),
             transformX = transformArr[0],
             transformY = transformArr[1];
             params.left = transformX;
             params.top = transformY;
-            //callback();
-            Base.removeEvent(document, "touchend", dragUp);
+            fun.call(elem, event);
             Base.removeEvent(document, "touchmove", dragMove);
             Base.removeEvent(document, 'mousemove', dragMove);
-            Base.removeEvent(document, 'mouseup', dragUp);
+            Base.removeEvent(elem, "touchend", dragUp);
+            Base.removeEvent(elem, 'mouseup', dragUp);
             return false;
         }
         Base.event(elem, "touchstart", dragDown);
         Base.event(elem, "mousedown", dragDown);
-        // elem.style.transform = "matrix(1, 0, 0, 1, "+transformX+", "+transformY+")";
     }
 });
