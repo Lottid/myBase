@@ -38,13 +38,14 @@ Base.ready(function() {
         var html = '<img id="target" src="../dist/img/cloud.png">';
     playarea.innerHTML = html;
     var target = document.getElementById('target');
-    Base.touch(target,"swipeUp",function() {
-        console.log(this);
+    Base.touch(target,"swipeUp",function(event) {
+        //console.log(event);
     });
     
-    // Base.event(playarea,target,"click",function() {
-    //  console.log(this);
-    // });
+    Base.event(target,"tap",function(event) {
+        console.log(event);
+    });
+    Base.fireEvent(target,"tap");
 });
 
 </script>
