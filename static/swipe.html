@@ -36,14 +36,15 @@ Base.ready(function() {
     var //target = document.getElementById('target'),
         playarea = document.getElementById('playarea');
         var html = '<img id="target" src="../dist/img/cloud.png">';
-    Base.swipe(target,"swipeLeft",function() {
-
-    });
     playarea.innerHTML = html;
     var target = document.getElementById('target');
-    Base.event(playarea,target,"click",function() {
-        alert(this.id)
+    Base.touch(target,"swipeUp",function() {
+        console.log(this);
     });
+    
+    // Base.event(playarea,target,"click",function() {
+    //  console.log(this);
+    // });
 });
 
 </script>
