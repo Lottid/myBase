@@ -737,14 +737,14 @@
             if (matrix.length == 6) {
                 transformX = matrix[4];
                 transformY = matrix[5];
-                transformArr.push(transformX);
-                transformArr.push(transformY);
+                transformArr.push(parseInt(transformX));
+                transformArr.push(parseInt(transformY));
             } else if (matrix.length == 16) {
                 transformX = matrix[12];
                 transformY = matrix[13];
                 transformZ = matrix[14];
-                transformArr.push(transformX);
-                transformArr.push(transformY);
+                transformArr.push(parseInt(transformX));
+                transformArr.push(parseInt(transformY));
             }
         }
         return transformArr;
@@ -782,7 +782,7 @@
             flag: false
         };
 
-        var recDate, nowDate, isTap,displacement,speed;
+        var recDate, nowDate, isTap,displacement,speed,isSwipe = false,isMove = false;
         if (Base.isFunction(jsonOpt)) {
             fun = jsonOpt;
         }
@@ -791,6 +791,7 @@
                 'displacement': 0,
                 'speed': 400
             }
+            isSwipe = true;
             var finOpt = Base.extend(opt, jsonOpt);
             displacement = parseInt(finOpt.displacement);
             speed = parseInt(finOpt.speed);
@@ -820,32 +821,36 @@
                     disY = nowY - params.currentY;
                 switch (swipeFlag) {
                     case "swipeLeft":
-                        if (disX > 0) {
-                            disX = 0;
-                        }
+                        if (disX > 0) return;
+                        isMove = true;
                         disY = 0;
-                        setOpt(elem, disX, disY);
+                        if(!isSwipe) {
+                            setOpt(elem, disX, disY);
+                        }
                         break;
                     case "swipeRight":
-                        if (disX < 0) {
-                            disX = 0;
-                        }
+                        if (disX < 0) return;
                         disY = 0;
-                        setOpt(elem, disX, disY);
+                        isMove = true;
+                        if(!isSwipe) {
+                            setOpt(elem, disX, disY);
+                        }
                         break;
                     case "swipeUp":
-                        if (disY > 0) {
-                            disY = 0;
-                        }
+                        if (disY > 0)  return;
+                        isMove = true;
                         disX = 0;
-                        setOpt(elem, disX, disY);
+                        if(!isSwipe) {
+                            setOpt(elem, disX, disY);
+                        }
                         break;
                     case "swipeDown":
-                        if (disY < 0) {
-                            disY = 0;
-                        }
+                        if (disY < 0)  return;
                         disX = 0;
-                        setOpt(elem, disX, disY);
+                        isMove = true;
+                        if(!isSwipe) {
+                            setOpt(elem, disX, disY);
+                        }
                         break;
                     case "tap":
                         disY = 0;
@@ -906,48 +911,52 @@
                     }
                     break;
                 case "swipeLeft":
-                    if (Base.isNum(displacement)) {
+                    if (Base.isNum(displacement) && isMove) {
                         var dis = parseInt(params.left) - parseInt(displacement);
                         translate(elem, speed, dis, 0);
                         var animate = setTimeout(function() {
                             fun.call(elem, event);
                             clearTimeout(animate);
+                            isMove = false;
                         }, speed);
                     } else {
                         fun.call(elem, event);
                     }
                     break;
                 case "swipeRight":
-                    if (Base.isNum(displacement)) {
+                    if (Base.isNum(displacement) && isMove) {
                         var dis = parseInt(params.left) + parseInt(displacement);
                         translate(elem, speed, dis, 0);
                         var animate = setTimeout(function() {
                             fun.call(elem, event);
                             clearTimeout(animate);
+                            isMove = false;
                         }, speed);
-                    } else {
+                    } else if (isMove) {
                         fun.call(elem, event);
                     }
                     break;
                 case "swipeUp":
-                    if (Base.isNum(displacement)) {
+                    if (Base.isNum(displacement) && isMove) {
                         var dis = parseInt(params.top) - parseInt(displacement);
                         translate(elem, speed, 0, dis);
                         var animate = setTimeout(function() {
                             fun.call(elem, event);
                             clearTimeout(animate);
+                            isMove = false;
                         }, speed);
                     } else {
                         fun.call(elem, event);
                     }
                     break;
                 case "swipeDown":
-                    if (Base.isNum(displacement)) {
+                    if (Base.isNum(displacement) && isMove) {
                         var dis = parseInt(params.top) + parseInt(displacement);
                         translate(elem, speed, 0, dis);
                         var animate = setTimeout(function() {
                             fun.call(elem, event);
                             clearTimeout(animate);
+                            isMove = false;
                         }, speed);
                     } else {
                         fun.call(elem, event);

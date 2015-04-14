@@ -14,6 +14,7 @@ img{
     -webkit-transition: opacity .5s;
     -webkit-touch-callout:none;
     box-shadow: 2px 2px 5px #bbb;
+    display: block;
 }
 </style>
 <script type="text/javascript" src="../dist/js/base.js"></script>
@@ -31,17 +32,17 @@ Base.ready(function() {
     Base.touch(targetLongTap,"longTap",function(event) {
         console.log("longTap");
     });
-    Base.touch(targetSwipeRight,"swipeRight",{'displacement':100,'speed':1000},function(event) {
-        console.log("swipeRight");
-    });
     Base.touch(targetSwipeUp,"swipeUp",function(event) {
         console.log("swipeUp");
     });
     Base.touch(targetSwipeDown,"swipeDown",function(event) {
         console.log("swipeDown");
     });
-    Base.touch(targetSwipeLeft,"swipeLeft",{'displacement':100},function(event) {
+    Base.touch(targetSwipeLeft,"swipeLeft",{'displacement':1000,speed:1000},function(event) {
         console.log("swipeLeft");
+    });
+    Base.touch(targetSwipeRight,"swipeRight",{'displacement':1000},function(event) {
+        console.log("swipeRight");
     });
 });
 
