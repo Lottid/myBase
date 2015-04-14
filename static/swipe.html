@@ -31,7 +31,7 @@ Base.ready(function() {
     Base.touch(targetLongTap,"longTap",function(event) {
         console.log("longTap");
     });
-    Base.touch(targetSwipeRight,"swipeRight",function(event) {
+    Base.touch(targetSwipeRight,"swipeRight",{'displacement':100,'speed':1000},function(event) {
         console.log("swipeRight");
     });
     Base.touch(targetSwipeUp,"swipeUp",function(event) {
@@ -40,7 +40,7 @@ Base.ready(function() {
     Base.touch(targetSwipeDown,"swipeDown",function(event) {
         console.log("swipeDown");
     });
-    Base.touch(targetSwipeLeft,"swipeLeft",function(event) {
+    Base.touch(targetSwipeLeft,"swipeLeft",{'displacement':100},function(event) {
         console.log("swipeLeft");
     });
 });

@@ -96,13 +96,13 @@
         if (Base.getStyle(element, "left") !== "auto") {
             params.left = Base.getStyle(element, "left");
         }
-        if (Base.getStyle(element, "left") == "auto") { 
+        if (Base.getStyle(element, "left") == "auto") {
             params.left = element.offsetLeft;
         }
         if (Base.getStyle(element, "top") !== "auto") {
             params.top = Base.getStyle(element, "top");
         }
-        if (Base.getStyle(element, "top") == "auto") { 
+        if (Base.getStyle(element, "top") == "auto") {
             params.left = element.offsetTop;
         }
         var dragDown = function(event) {
@@ -351,7 +351,7 @@
      */
     Base.getStyle = function(obj, attr) {
         var hasBgp = attr.indexOf("background-position-");
-        if(!Base.isDOM(obj)) return;
+        if (!Base.isDOM(obj)) return;
         //兼容Firefox获取 背景图位置
         if (hasBgp != -1) {
             if (!obj.currentStyle) {
@@ -394,6 +394,7 @@
                     recdJson[attr] = attrValue;
             }
         };
+
         function timer() {
             for (attr in json) {
                 var attrValue = 0,
@@ -472,6 +473,13 @@
         return Base.getType(obj) === "string";
     }
     /**
+     * 判断对象是否为String
+     * @param  obj ： 对象
+     */
+    Base.isNum = function(obj) {
+        return Base.getType(obj) === "number";
+    }
+    /**
      * [判断是否是数组]
      * @param  {[type]} obj [目标数组]
      */
@@ -532,7 +540,7 @@
         if (elem.addEventListener) {
             if (Base.isDOM(target)) {
                 elem.addEventListener(evt, function(event) {
-                    delege(event, target,fn);
+                    delege(event, target, fn);
                 }, false);
             } else {
                 elem.addEventListener(evt, fn, false);
@@ -545,14 +553,14 @@
         } else if (elem.attachEvent) {
             if (Base.isDOM(target)) {
                 elem.attachEvent("on" + evt, function(event) {
-                    delege(event, target,fn);
+                    delege(event, target, fn);
                 });
             } else {
-                elem.attachEvent('on' + evt, function(){
+                elem.attachEvent('on' + evt, function() {
                     fn.call(elem, window.event);
                 });
                 if (isNaN(elem["cu" + evt])) {
-                // 自定义属性，触发事件用
+                    // 自定义属性，触发事件用
                     elem["cu" + evt] = 0;
                 }
                 var fnEv = function(event) {
@@ -572,13 +580,14 @@
             //貌似一般走不到这里。走到这里，事件委托，我也不会了,不知是不是这么写
             if (Base.isDOM(target)) {
                 elem["on" + evt] = function(event) {
-                    delege(event, target,fn);
+                    delege(event, target, fn);
                 }
             } else {
                 elem["on" + evt] = fn;
             }
         }
-        function delege(event, target,fn) {
+
+        function delege(event, target, fn) {
             var theEvent = window.event || event,
                 theTag = theEvent.target || theEvent.srcElement;
             if (!Base.isDOM(target) && Base.isString(target)) {
@@ -589,7 +598,7 @@
             }
         }
     }
-    Base.fireEvent = function(elem,evt) {
+    Base.fireEvent = function(elem, evt) {
         if (typeof evt === "string") {
             if (document.dispatchEvent) {
                 if (elem["ev" + evt]) {
@@ -598,8 +607,8 @@
             } else if (document.attachEvent) {
                 // 改变对应自定义属性，触发自定义事件
                 elem["cu" + evt]++;
-            }    
-        }    
+            }
+        }
     }
     /**
      * [removeEvent description]
@@ -616,7 +625,7 @@
             obj["e" + type + fn] = null;
             var arrEv = obj["ev" + type];
             if (arrEv instanceof Array) {
-                for (var i=0; i<arrEv.length; i+=1) {
+                for (var i = 0; i < arrEv.length; i += 1) {
                     // 删除该方法名下所有绑定的propertychange事件
                     obj.detachEvent("onpropertychange", arrEv[i]);
                 }
@@ -720,10 +729,10 @@
             transformX,
             transformY,
             transformArr = [];
-        if(transform == "none" || transform == undefined) {
+        if (transform == "none" || transform == undefined) {
             transformArr.push(0);
             transformArr.push(0);
-        }else {
+        } else {
             var matrix = transform.split('(')[1].split(')')[0].split(',');
             if (matrix.length == 6) {
                 transformX = matrix[4];
@@ -745,15 +754,14 @@
      * @param  {[type]} e [description]
      * @return {[type]}   [description]
      */
-    Base.stopDefault = function(e) { 
+    Base.stopDefault = function(e) {
         //阻止默认浏览器动作(W3C) 
-        if ( e && e.preventDefault ) {
-            e.preventDefault(); 
+        if (e && e.preventDefault) {
+            e.preventDefault();
+        } else { //IE中阻止函数器默认动作的方式 
+            window.event.returnValue = false;
         }
-        else {//IE中阻止函数器默认动作的方式 
-            window.event.returnValue = false; 
-        }
-        return false; 
+        return false;
     }
     /**
      * [touch 简单模拟touch事件]
@@ -762,7 +770,7 @@
      * @param  {[type]} fun       [description]
      * @return {[type]}           [description]
      */
-    Base.touch = function(elem, swipeFlag, fun) {
+    Base.touch = function(elem, swipeFlag, jsonOpt, fun) {
         var transformArr = Base.transform(elem),
             transformX = transformArr[0],
             transformY = transformArr[1];
@@ -773,7 +781,21 @@
             currentY: 0,
             flag: false
         };
-        var recDate,nowDate,isTap;
+
+        var recDate, nowDate, isTap,displacement,speed;
+        if (Base.isFunction(jsonOpt)) {
+            fun = jsonOpt;
+        }
+        if(Base.getType(jsonOpt) === "object") {
+            var opt = {
+                'displacement': 0,
+                'speed': 400
+            }
+            var finOpt = Base.extend(opt, jsonOpt);
+            displacement = parseInt(finOpt.displacement);
+            speed = parseInt(finOpt.speed);
+        }
+            
         if (!Base.isFunction(fun)) {
             fun = function() {}
         }
@@ -798,32 +820,32 @@
                     disY = nowY - params.currentY;
                 switch (swipeFlag) {
                     case "swipeLeft":
-                        if(disX > 0) {
+                        if (disX > 0) {
                             disX = 0;
                         }
                         disY = 0;
-                        setOpt(elem,disX,disY);
+                        setOpt(elem, disX, disY);
                         break;
                     case "swipeRight":
-                        if(disX < 0) {
+                        if (disX < 0) {
                             disX = 0;
                         }
                         disY = 0;
-                        setOpt(elem,disX,disY);
+                        setOpt(elem, disX, disY);
                         break;
                     case "swipeUp":
-                        if(disY > 0) {
+                        if (disY > 0) {
                             disY = 0;
                         }
                         disX = 0;
-                        setOpt(elem,disX,disY);
+                        setOpt(elem, disX, disY);
                         break;
                     case "swipeDown":
-                        if(disY < 0) {
+                        if (disY < 0) {
                             disY = 0;
                         }
                         disX = 0;
-                        setOpt(elem,disX,disY);
+                        setOpt(elem, disX, disY);
                         break;
                     case "tap":
                         disY = 0;
@@ -835,14 +857,14 @@
                     default:
                         disX = disX,
                         disY = disY;
-                        setOpt(elem,disX,disY);
+                        setOpt(elem, disX, disY);
                 }
             }
         }
-        var setOpt = function(elem,disX,disY) {
+        var setOpt = function(elem, disX, disY) {
             var finLeft = parseInt(params.left) + disX,
                 finRight = parseInt(params.top) + disY;
-            elem.style.transform = "matrix(1, 0, 0, 1, "+finLeft+", "+finRight+")";
+            elem.style.transform = "matrix(1, 0, 0, 1, " + finLeft + ", " + finRight + ")";
         }
         var delEvent = function() {
             Base.removeEvent(document, "touchmove", dragMove);
@@ -860,27 +882,75 @@
             Base.stopDefault(event);
             params.flag = false;
             var transformArr = Base.transform(elem),
-            transformX = transformArr[0],
-            transformY = transformArr[1];
+                transformX = transformArr[0],
+                transformY = transformArr[1];
             params.left = transformX;
             params.top = transformY;
             nowDate = new Date();
             var keepTime = nowDate - recDate;
             switch (swipeFlag) {
                 case "tap":
-                    if(keepTime < 250) {
+                    if (keepTime < 250) {
                         var isTap = "tap";
-                        if(swipeFlag == isTap) {
+                        if (swipeFlag == isTap) {
                             fun.call(elem, event);
                         }
                     }
                     break;
                 case "longTap":
-                    if(keepTime > 250 && keepTime < 1400) {
+                    if (keepTime > 250 && keepTime < 1400) {
                         var isTap = "longTap";
-                        if(swipeFlag == isTap) {
+                        if (swipeFlag == isTap) {
                             fun.call(elem, event);
                         }
+                    }
+                    break;
+                case "swipeLeft":
+                    if (Base.isNum(displacement)) {
+                        var dis = parseInt(params.left) - parseInt(displacement);
+                        translate(elem, speed, dis, 0);
+                        var animate = setTimeout(function() {
+                            fun.call(elem, event);
+                            clearTimeout(animate);
+                        }, speed);
+                    } else {
+                        fun.call(elem, event);
+                    }
+                    break;
+                case "swipeRight":
+                    if (Base.isNum(displacement)) {
+                        var dis = parseInt(params.left) + parseInt(displacement);
+                        translate(elem, speed, dis, 0);
+                        var animate = setTimeout(function() {
+                            fun.call(elem, event);
+                            clearTimeout(animate);
+                        }, speed);
+                    } else {
+                        fun.call(elem, event);
+                    }
+                    break;
+                case "swipeUp":
+                    if (Base.isNum(displacement)) {
+                        var dis = parseInt(params.top) - parseInt(displacement);
+                        translate(elem, speed, 0, dis);
+                        var animate = setTimeout(function() {
+                            fun.call(elem, event);
+                            clearTimeout(animate);
+                        }, speed);
+                    } else {
+                        fun.call(elem, event);
+                    }
+                    break;
+                case "swipeDown":
+                    if (Base.isNum(displacement)) {
+                        var dis = parseInt(params.top) + parseInt(displacement);
+                        translate(elem, speed, 0, dis);
+                        var animate = setTimeout(function() {
+                            fun.call(elem, event);
+                            clearTimeout(animate);
+                        }, speed);
+                    } else {
+                        fun.call(elem, event);
                     }
                     break;
                 default:
@@ -889,6 +959,10 @@
             delEvent();
             return false;
         }
+        var translate = function(elem, speed, distanceX, distanceY) {
+            elem.style.transitionDuration = speed + "ms";
+            elem.style.transform = "matrix(1, 0, 0, 1, " + distanceX + ", " + distanceY + ")";
+        };
         Base.event(elem, "touchstart", dragDown);
         Base.event(elem, "mousedown", dragDown);
     }
@@ -897,10 +971,68 @@
      * @return {[type]} [description]
      */
     Base.getUrl = function() {
-        var div = document.createElement('div'); 
+        var div = document.createElement('div');
         div.innerHTML = '<a href="./" id="localId"></a>';
-        var url = div.firstChild.href; 
-        div = null; 
+        var url = div.firstChild.href;
+        div = null;
         return url;
+    }
+    /**
+     * [extend 来自jq继承对象]
+     * @return {[type]} [description]
+     */
+    Base.extend = function() {
+        var src, copyIsArray, copy, name, options, clone,
+            target = arguments[0] || {},
+            i = 1,
+            length = arguments.length,
+            deep = false;
+        // 判断是否是boolean类型
+        if (typeof target === "boolean") {
+            deep = target;
+            // skip the boolean and the target
+            target = arguments[i] || {};
+            i++;
+        }
+        // 不是object和function 目标位 {}
+        if (typeof target !== "object" && !Base.isFunction(target)) {
+            target = {};
+        }
+        // 判断参数长度
+        if (i === length) {
+            target = this;
+            i--;
+        }
+        for (; i < length; i++) {
+            // 判断是否有参数
+            if ((options = arguments[i]) != null) {
+                // 合并
+                for (name in options) {
+                    src = target[name];
+                    copy = options[name];
+                    // 如果相等，本次结束
+                    if (target === copy) {
+                        continue;
+                    }
+                    // 递归如果我们合并对象或数组
+                    if (deep && copy && (copyIsArray = Base.isArray(copy))) {
+                        if (copyIsArray) {
+                            copyIsArray = false;
+                            clone = src && Base.isArray(src) ? src : [];
+
+                        } else {
+                            clone = src ? src : {};
+                        }
+                        // clone
+                        target[name] = Base.extend(deep, clone, copy);
+                        // 去除未定义的值
+                    } else if (copy !== undefined) {
+                        target[name] = copy;
+                    }
+                }
+            }
+        }
+        // 返回结果
+        return target;
     }
 });
