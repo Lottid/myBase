@@ -3,21 +3,35 @@
 <head>
 <meta charset="UTF-8">
 <title>Document</title>
-<script type="text/javascript" src="../dist/js/base.js"></script>
+<script type="text/javascript" src="../dist/js/require.js"></script>
+<link type="text/css" href="../dist/css/base.css"  rel="stylesheet"/>
+<link type="text/css" href="../dist/css/demo.css"  rel="stylesheet"/>
+<script type="text/javascript" src="../dist/js/config.js"></script>
+<!-- <script type="text/javascript" src="../dist/js/base.js"></script> -->
 <script type="text/javascript">
-function testReady() {
-	var div = document.getElementById('div01');
-	console.log(div.id);
-}
-function test1Ready() {
-	var div = document.getElementById('div01');
-	console.log(div.className);
-}
-Base.ready(testReady,test1Ready);
+
+// function testReady() {
+// 	var div = document.getElementById('div01');
+// 	alert(div.id);
+// }
+// function test1Ready() {
+// 	var div = document.getElementById('div01');
+// 	alert(div.className);
+// }
+
 //Base.ready(testReady,test1Ready);
+var btnClick = document.getElementById('btnClick'),
+    divClick = document.getElementById("div-click");
+	// B.event(divClick,btnClick,"click",function() {
+	//     alert("click");
+	// });
+	console.log(btnClick,divClick);
 </script>
 </head>
 <body>
 	<div id="div01" class="div01_class"></div>
+<div class="div-click" id="div-click">
+        <input type="button" value="click" id="btnClick">
+    </div>
 </body>
 </html>

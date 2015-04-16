@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Document</title>
+<link type="text/css" href="../dist/css/base.css"  rel="stylesheet"/>
+<link type="text/css" href="../dist/css/demo.css"  rel="stylesheet"/>
+<style type="text/css">
+select {
+    border: 1px solid #e2e2e2;
+    color: #c0c0c0;
+    font-size: 14px;
+    line-height: 15px;
+    padding: 8px 12px;
+    width: 350px;
+}
+</style>
+<script type="text/javascript" src="../dist/js/base.js"></script>
+<script type="text/javascript">
+Base.ready(function() {
+	var objDiv = document.getElementById('div01');
+	console.log(Base.hasClass(objDiv,"div01"));
+	Base.addClass(objDiv,"div03");
+	console.log(objDiv);
+	Base.removeClass(objDiv,"div02");
+	console.log(objDiv);
+});
+</script>
+</head>
+<body>
+	<!-- <div id="div01" class="div01 div02"></div> -->
+	<select>
+                                            <option value="">请选择</option>
+                                        </select>
+</body>
+</html>

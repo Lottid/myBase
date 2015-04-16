@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Document</title>
+<style type="text/css">
+#playarea {
+		width: 768px;
+		height: 440px;
+		position: relative;
+		margin: 0 auto;
+	}
+#target{
+	position: absolute;
+	cursor: pointer;
+	width: 166px;
+	border: 1px solid #ddd;
+	-webkit-border-radius: 100px;
+	-webkit-box-shadow: 2px 2px 5px #bbb;
+	-webkit-transition: opacity .5s;
+	-webkit-touch-callout:none;
+	border-radius: 100px;
+	box-shadow: 2px 2px 5px #bbb;
+	transition: opacity .5s;
+}
+</style>
+<script type="text/javascript" src="../dist/js/touch.js"></script>
+<script type="text/javascript">
+//console.log(touch);
+//console.log(utils.getType([]));
+//console.log(utils.hasTouch);
+//console.log(utils.env);
+//console.log(utils.isTouchMove);
+</script>
+</head>
+<body>
+<div id="playarea">
+	<img id="target" draggable="false" src="../dist/img/cloud.png" class="show" style="transform: rotate(0deg);">
+</div>
+<script type="text/javascript">
+// var getId = document.getElementById('div01');
+// //console.log(getId.tagName.toLowerCase());
+// var selId = utils.getSelector(getId);
+// 	//selClass = utils.getSelector("div02");
+// console.log(selId);
+// var angle = 0;
+// touch.on('#target', 'touchstart', function(ev){
+//     ev.startRotate();
+//     ev.preventDefault();
+// });
+
+// touch.on('#target', 'rotate', function(ev){
+//     var totalAngle = angle + ev.rotation;
+//     if(ev.fingerStatus === 'end'){
+//         angle = angle + ev.rotation;
+//     }
+//     //console.log(totalAngle);
+//     this.style.transform = 'rotate(' + totalAngle + 'deg)';
+// });
+// touch.on('#target', 'tap', function(ev){
+//     console.log(ev.type);
+// });
+// touch.on('#target', 'hold', function(ev){
+//     console.log(ev.type);
+// });
+// touch.on('#target', 'doubletap', function(ev){
+//     console.log(ev.type);
+// });
+touch.on(target, 'swipeRight', function(ev){
+	console.log("向右滑动."+this.offsetRight+this);
+});
+
+touch.on(target, 'swipeleft', function(ev){
+	console.log(this);
+});
+</script>
+</body>
+</html>

@@ -16,13 +16,55 @@
     }
 })(this, function(Base, undefined) {
     /**
-     * 判断是否拥有某个class
+     * [hasClass 是否含有指定class]
+     * @param  {[type]}  dom       [目标dom]
+     * @param  {[type]}  className [className]
+     * @return {Boolean}           [true or false]
      */
-    Base.hasClass = function(dom, classSingle) {
-        return dom.className.match(new RegExp('(\\s|^)' + classSingle + '(\\s|$)'));
+    Base.hasClass = function(dom, className) {
+        var result = dom.className.match(new RegExp('(\\s|^)' + className + '(\\s|$)'));
+        if (result) {
+            return true;
+        } else {
+            return false;
+        }
     }
     /**
-     * [requestAnimationFrame description]
+     * [addClass 添加class]
+     * @param {[type]} dom       [目标元素]
+     * @param {[type]} className [添加class]
+     */
+    Base.addClass = function(dom, className) {
+        if (!Base.hasClass(dom, className)) dom.className += " " + className;
+    }
+    /**
+     * [removeClass 删除指定class]
+     * @param  {[type]} dom       [dom]
+     * @param  {[type]} className [class名称]
+     */
+    Base.removeClass = function(dom, className) {
+        if (Base.hasClass(dom, className)) {
+            var reg = new RegExp('(\\s|^)' + className + '(\\s|$)');
+            dom.className = dom.className.replace(reg, ' ');
+        }
+    }
+    /**
+     * [del_ff 删除空格等节点]
+     * @param  {[type]} elem [目标 dom]
+     * @return {[type]}      [返回去除空格节点的dom]
+     */
+    Base.del_ff = function(elem) {
+        var elem_child = elem.childNodes;
+        for (var i = 0; i < elem_child.length; i++) {
+            if (elem_child[i].nodeName == "#text" && !/\s/.test(elem_child.nodeValue))
+            {
+                elem.removeChild(elem_child)
+            }
+        }
+        return elem;
+    }
+    /**
+     * [requestAnimationFrame 简单动画]
      * @return {[type]} [description]
      */
     Base.requestAnimationFrame = function(fn, isFlag) {
@@ -523,22 +565,25 @@
     /**
      * [event 事件函数]
      * @param  {[type]}   elem   [委托dom或目标dom]
-     * @param  {[type]}   target [目标dom]
+     * @param  {[type]}   target [目标dom，支持id，class，html标签]
      * @param  {[type]}   evt    [事件]
      * @param  {Function} fn     [函数]
      * @return {[type]}          [简易事件处理]
      */
     Base.event = function(elem, target, evt, fn) {
         if (!Base.isDOM(elem) && elem != document) return;
-        if (!Base.isDOM(target) && Base.isString(target)) {
+        var isDelege = false;
+        if (Base.isFunction(evt)) {
             fn = evt;
             evt = target;
+        } else {
+            isDelege = true;
         }
         if (!Base.isFunction(fn)) {
             fn = function() {}
         }
         if (elem.addEventListener) {
-            if (Base.isDOM(target)) {
+            if (isDelege) {
                 elem.addEventListener(evt, function(event) {
                     delege(event, target, fn);
                 }, false);
@@ -551,7 +596,7 @@
                 }
             }
         } else if (elem.attachEvent) {
-            if (Base.isDOM(target)) {
+            if (isDelege) {
                 elem.attachEvent("on" + evt, function(event) {
                     delege(event, target, fn);
                 });
@@ -586,18 +631,71 @@
                 elem["on" + evt] = fn;
             }
         }
-
         function delege(event, target, fn) {
             var theEvent = window.event || event,
                 theTag = theEvent.target || theEvent.srcElement;
-            if (!Base.isDOM(target) && Base.isString(target)) {
-                fn = evt;
+            if (Base.isDOM(target)) {
+                if (theTag == target) {
+                    fn.call(theTag, theEvent); //fn方法应用到theTag上面
+                }
             }
-            if (theTag == target) {
-                fn.call(theTag, theEvent); //fn方法应用到theTag上面
+            if (Base.isString(target)) {
+                if (target.charAt(0) == "#") {
+                    var target = document.getElementById(target.substring(1, target.length));
+                    if (theTag == target) {
+                        fn.call(theTag, theEvent); //fn方法应用到theTag上面
+                    }
+                } else if (document.querySelectorAll) {
+                    var qSelectorList = elem.querySelectorAll(target),
+                        qELLent = qSelectorList.length;
+                    if (document.querySelectorAll) {
+                        for (var i = 0; i < qELLent; i++) {
+                            if (theTag == qSelectorList[i]) {
+                                fn.call(theTag, theEvent); //fn方法应用到theTag上面
+                            }
+                        };
+                    }
+                } else {
+                    if (target.charAt(0) == ".") {
+                        var targetClass = target.substring(1, target.length),
+                            classList = elem.getElementsByTagName('*'),
+                            classListLen = classList.length;
+                        for (var i = 0; i < classListLen; i++) {
+                            if (Base.hasClass(classList[i], targetClass) && classList[i] == theTag) {
+                                fn.call(theTag, theEvent); //fn方法应用到theTag上面
+                            }
+                        };
+                    } else {
+                        var targetTagName = target.toLowerCase(),
+                            classList = elem.getElementsByTagName('*'),
+                            classListLen = classList.length;
+                        for (var i = 0; i < classListLen; i++) {
+                            classListTagName = classList[i].tagName.toLowerCase();
+                            if (classList[i] == theTag && classListTagName == targetTagName) {
+                                fn.call(theTag, theEvent); //fn方法应用到theTag上面
+                            }
+                        };
+                    }
+                }
             }
         }
     }
+    EventList = {
+
+    }
+    /**
+     * [trim 去除首尾空格]
+     * @param  {[type]} str [str]
+     * @return {[type]}     [返回去除空格的]
+     */
+    Base.trim = function(str) {
+        return str.replace(/^(\s|\u00A0)+/, '').replace(/(\s|\u00A0)+$/, '');
+    }
+    /**
+     * [fireEvent 触发函数]
+     * @param  {[type]} elem [节点]
+     * @param  {[type]} evt  [事件]
+     */
     Base.fireEvent = function(elem, evt) {
         if (typeof evt === "string") {
             if (document.dispatchEvent) {
@@ -782,11 +880,12 @@
             flag: false
         };
 
-        var recDate, nowDate, isTap,displacement,speed,isSwipe = false,isMove = false;
+        var recDate, nowDate, isTap, displacement, speed, isSwipe = false,
+            isMove = false;
         if (Base.isFunction(jsonOpt)) {
             fun = jsonOpt;
         }
-        if(Base.getType(jsonOpt) === "object") {
+        if (Base.getType(jsonOpt) === "object") {
             var opt = {
                 'displacement': 0,
                 'speed': 400
@@ -796,7 +895,7 @@
             displacement = parseInt(finOpt.displacement);
             speed = parseInt(finOpt.speed);
         }
-            
+
         if (!Base.isFunction(fun)) {
             fun = function() {}
         }
@@ -824,7 +923,7 @@
                         if (disX > 0) return;
                         isMove = true;
                         disY = 0;
-                        if(!isSwipe) {
+                        if (!isSwipe) {
                             setOpt(elem, disX, disY);
                         }
                         break;
@@ -832,23 +931,23 @@
                         if (disX < 0) return;
                         disY = 0;
                         isMove = true;
-                        if(!isSwipe) {
+                        if (!isSwipe) {
                             setOpt(elem, disX, disY);
                         }
                         break;
                     case "swipeUp":
-                        if (disY > 0)  return;
+                        if (disY > 0) return;
                         isMove = true;
                         disX = 0;
-                        if(!isSwipe) {
+                        if (!isSwipe) {
                             setOpt(elem, disX, disY);
                         }
                         break;
                     case "swipeDown":
-                        if (disY < 0)  return;
+                        if (disY < 0) return;
                         disX = 0;
                         isMove = true;
-                        if(!isSwipe) {
+                        if (!isSwipe) {
                             setOpt(elem, disX, disY);
                         }
                         break;

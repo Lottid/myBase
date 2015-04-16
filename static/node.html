@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Document</title>
+<link type="text/css" href="../dist/css/base.css"  rel="stylesheet"/>
+<link type="text/css" href="../dist/css/demo.css"  rel="stylesheet"/>
+<script type="text/javascript" src="../dist/js/base.js"></script>
+<script type="text/javascript">
+Base.ready(function() {
+	var objDiv = document.getElementById('div01');
+	var newDiv = Base.del_ff(objDiv);
+	console.log(newDiv)
+	console.log(objDiv);
+});
+</script>
+</head>
+<body>
+	<div id="div01" class="div01 div02"></div>
+</body>
+</html>

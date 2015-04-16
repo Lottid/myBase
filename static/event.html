@@ -9,7 +9,10 @@
 </head>
 <body>
     <div class="div-click" id="div-click">
-        <input type="button" value="click" id="btnClick">
+        <!-- <div class="div0001">11111</div>
+        <div class="div0001">22222</div>
+        <div class="div0001">33333</div>
+        <div class="div0001">44444</div> -->
     </div>
 <script type="text/javascript">
 var btnClick = document.getElementById('btnClick'),
@@ -17,12 +20,38 @@ var btnClick = document.getElementById('btnClick'),
 // Base.event(btnClick,"click",function() {
 //  alert("click" + "btnClick");
 // });
-Base.event(divClick,btnClick,"click",function() {
-    alert("click");
-});
+// Base.event(divClick,btnClick,"click",function() {
+//     alert("click");
+// });
+// Base.event(divClick,".div0001","click",showMess1);
+Base.event(divClick,"div","click",showMess1);
+divClick.innerHTML = '<div class="div0001">11111</div>'+
+        			 '<div class="div0001">22222</div>'+
+        			 '<div class="div0001">33333</div>'+
+        			 '<div class="div0001">44444</div>';
+function showMess1() {
+	alert(111);
+}
+function showMess2() {
+	alert(222);
+}
+function showMess3() {
+	alert(333);
+}
+function showMess4() {
+	alert(444);
+}
 // Base.event(divClick,btnClick,"touchstart",function() {
 //  alert("click");
 // });
+// var a = {n:1};
+// console.log(a);
+// b = a;
+// console.log(b);
+// a.x = a = 2;
+// //console.log(a);
+// console.log(a.x);
+// console.log(b);
 </script>
 </body>
 </html>
