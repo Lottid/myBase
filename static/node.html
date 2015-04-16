@@ -9,13 +9,20 @@
 <script type="text/javascript">
 Base.ready(function() {
 	var objDiv = document.getElementById('div01');
-	var newDiv = Base.del_ff(objDiv);
-	console.log(newDiv)
-	console.log(objDiv);
+	// var newDiv = Base.del_ff(objDiv);
+	// console.log(newDiv)
+	// console.log(objDiv);
+	var html = Base.html(objDiv);
+	console.log(html);
+	var temp = '<div>0</div><div>1</div><div>2</div>';
+	Base.html(objDiv,temp);
+	
 });
 </script>
 </head>
 <body>
-	<div id="div01" class="div01 div02"></div>
+	<div id="div01">
+		<div>1111</div>
+	</div>
 </body>
 </html>

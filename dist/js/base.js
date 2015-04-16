@@ -53,6 +53,14 @@
      * @param  {[type]} elem [目标 dom]
      * @return {[type]}      [返回去除空格节点的dom]
      */
+    Base.html = function(elem,value) {
+        if(!value) {
+            var resultHtml = elem.innerHTML;
+            return resultHtml;
+        } else {
+            elem.innerHTML = elem.innerHTML + value;
+        }
+    }
     Base.del_ff = function(elem) {
         var elem_child = elem.childNodes;
         for (var i = 0; i < elem_child.length; i++) {
@@ -585,8 +593,17 @@
         if (elem.addEventListener) {
             if (isDelege) {
                 elem.addEventListener(evt, function(event) {
-                    delege(event, target, fn);
+                    delege(evt, target, fn);
+                    console.log(1);
                 }, false);
+                elem.addEventListener(evt, fn, false);
+                var ev = document.createEvent("HTMLEvents");
+                ev.initEvent(evt, false, false);
+                if (!elem["ev" + evt]) {
+                    elem["ev" + evt] = ev;
+                }
+                delege(event, target, fn);
+                //
             } else {
                 elem.addEventListener(evt, fn, false);
                 var ev = document.createEvent("HTMLEvents");
