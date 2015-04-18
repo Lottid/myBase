@@ -61,10 +61,16 @@
             elem.innerHTML = elem.innerHTML + value;
         }
     }
+    /**
+     * [css 获取或添加css属性]
+     * @param  {[type]} elem  [description]
+     * @param  {[type]} value [description]
+     * @return {[type]}       [description]
+     */
     Base.css = function(elem, value) {
         function endsWith(str, filter) {
             var stratLen = str.length - filter.length;
-            return stratLen >= 0 && str.indexOf(filter, stratLen) == stratLen;//str.indexOf(filter, stratLen) 匹配位置是否等于差值
+            return stratLen >= 0 && str.indexOf(filter, stratLen) == stratLen; //str.indexOf(filter, stratLen) 匹配位置是否等于差值
         }
         if (value) {
             var oldCss = elem.style.cssText;
@@ -81,6 +87,27 @@
         } else {
 
             return elem.style.cssText;
+        }
+    }
+    Base.cookie = {
+
+    }
+    Base.localData = {
+        isLocalStorage: window.localStorage ? true : false,
+        set: function(key, value) {
+            if (this.isLocalStorage) {
+                window.localStorage.setItem(key, value);
+            }
+        },
+        get: function(key) {
+            if (this.isLocalStorage) {
+                return window.localStorage.getItem(key);
+            }
+        },
+        remove: function(key) {
+            if (this.isLocalStorage) {
+                localStorage.removeItem(key);
+            }
         }
     }
     /**
@@ -607,7 +634,7 @@
     Base.event = function(elem, target, evt, fn) {
         if (!Base.isDOM(elem) && elem != document) return;
         var isDelege = false;
-        if (Base.isFunction(evt)) {
+        if (Base.isFunction(evt) && !Base.isString(evt)) {
             fn = evt;
             evt = target;
         } else {
@@ -618,18 +645,10 @@
         }
         if (elem.addEventListener) {
             if (isDelege) {
+                //暂不支持，自定义事件事件委托
                 elem.addEventListener(evt, function(event) {
                     delege(evt, target, fn);
-                    console.log(1);
                 }, false);
-                elem.addEventListener(evt, fn, false);
-                var ev = document.createEvent("HTMLEvents");
-                ev.initEvent(evt, false, false);
-                if (!elem["ev" + evt]) {
-                    elem["ev" + evt] = ev;
-                }
-                delege(event, target, fn);
-                //
             } else {
                 elem.addEventListener(evt, fn, false);
                 var ev = document.createEvent("HTMLEvents");

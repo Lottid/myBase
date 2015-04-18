@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Document</title>
+<link type="text/css" href="../dist/css/base.css"  rel="stylesheet"/>
+<link type="text/css" href="../dist/css/demo.css"  rel="stylesheet"/>
+<script type="text/javascript" src="../dist/js/base.js"></script>
+<script type="text/javascript">
+Base.ready(function() {
+	var inputId = document.getElementById('inputId'),
+		set = document.getElementById('set'),
+		clear = document.getElementById('clear'),
+		log = document.getElementById('log');
+	Base.localData.set('inputId',inputId.value);
+	function clearBtn() {
+		Base.localData.remove('inputId');
+	}
+	function setBtn() {
+		Base.localData.set('inputId',inputId.value);
+	}
+	function logBtn() {
+		var log = Base.localData.get('inputId');
+		console.log(log);
+	}
+	Base.event(clear,"click",clearBtn);
+	Base.event(set,"click",setBtn);
+	Base.event(log,"click",logBtn);
+});
+</script>
+</head>
+<body>
+	<input type="text" name="" id="inputId" value="1111">
+	<input type="button" value="set" id="set">
+	<input type="button" value="clear" id="clear">
+	<input type="button" value="log" id="log">
+</body>
+</html>
