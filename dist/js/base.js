@@ -53,19 +53,45 @@
      * @param  {[type]} elem [目标 dom]
      * @return {[type]}      [返回去除空格节点的dom]
      */
-    Base.html = function(elem,value) {
-        if(!value) {
+    Base.html = function(elem, value) {
+        if (!value) {
             var resultHtml = elem.innerHTML;
             return resultHtml;
         } else {
             elem.innerHTML = elem.innerHTML + value;
         }
     }
+    Base.css = function(elem, value) {
+        function endsWith(str, filter) {
+            var stratLen = str.length - filter.length;
+            return stratLen >= 0 && str.indexOf(filter, stratLen) == stratLen;//str.indexOf(filter, stratLen) 匹配位置是否等于差值
+        }
+        if (value) {
+            var oldCss = elem.style.cssText;
+            if (oldCss) {
+                if (!endsWith(oldCss, ';')) {
+                    oldCss += ';';
+                }
+                value = oldCss + value;
+            }
+            if (!endsWith(value, ';')) {
+                value += ';';
+            }
+            elem.style.cssText = value;
+        } else {
+
+            return elem.style.cssText;
+        }
+    }
+    /**
+     * [del_ff 删除空格节点]
+     * @param  {[type]} elem
+     * @return {[type]}
+     */
     Base.del_ff = function(elem) {
         var elem_child = elem.childNodes;
         for (var i = 0; i < elem_child.length; i++) {
-            if (elem_child[i].nodeName == "#text" && !/\s/.test(elem_child.nodeValue))
-            {
+            if (elem_child[i].nodeName == "#text" && !/\s/.test(elem_child.nodeValue)) {
                 elem.removeChild(elem_child)
             }
         }
@@ -648,6 +674,7 @@
                 elem["on" + evt] = fn;
             }
         }
+
         function delege(event, target, fn) {
             var theEvent = window.event || event,
                 theTag = theEvent.target || theEvent.srcElement;
