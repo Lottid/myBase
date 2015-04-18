@@ -113,7 +113,7 @@
         },
         //清除cookie  
         clearCookie:function(name) {
-            setCookie(name, "", -1);
+            this.setCookie(name, "", -1);
         },
         //设置cookie  
         setCookie:function(name, value, seconds) {
