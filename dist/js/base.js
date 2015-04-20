@@ -331,8 +331,8 @@
             progress: function() {},
             complete: function() {}
         };
-        var params = {};
-        options = options || {};
+        var params = {},
+            options = options || {};
 
         for (var key in defaults) {
             params[key] = options[key] || defaults[key];
