@@ -97,7 +97,7 @@
      */
     Base.cookie = {
         //取得cookie  
-        getCookie:function(name) {
+        getCookie: function(name) {
             var nameEQ = name + "=";
             var ca = document.cookie.split(';'); //把cookie分割成组  
             for (var i = 0; i < ca.length; i++) {
@@ -112,11 +112,11 @@
             return false;
         },
         //清除cookie  
-        clearCookie:function(name) {
+        clearCookie: function(name) {
             this.setCookie(name, "", -1);
         },
         //设置cookie  
-        setCookie:function(name, value, seconds) {
+        setCookie: function(name, value, seconds) {
             seconds = seconds || 0; //seconds有值就直接赋值，没有为0，这个根php不一样。  
             var expires = "";
             if (seconds != 0) { //设置cookie生存时间  
@@ -137,7 +137,16 @@
         isLocalStorage: window.localStorage ? true : false,
         set: function(key, value) {
             if (this.isLocalStorage) {
-                window.localStorage.setItem(key, value);
+                try {
+                    window.localStorage.setItem(key, value);
+                } catch (oException) {
+                    if (oException.name == 'QuotaExceededError') {
+                        console.log('已经超(www.111cn.net)出本地存储限定大小！');
+                        // 可进行超出限定大小之后的操作，如下面可以先清除记录，再次保存
+                        Base.localData.clear();
+                        window.localStorage.setItem(key, value);
+                    }
+                }
             }
         },
         get: function(key) {
@@ -147,7 +156,12 @@
         },
         remove: function(key) {
             if (this.isLocalStorage) {
-                localStorage.removeItem(key);
+                window.llocalStorage.removeItem(key);
+            }
+        },
+        clear: function() {
+            if (this.isLocalStorage) {
+                window.llocalStorage.clear();
             }
         }
     }
