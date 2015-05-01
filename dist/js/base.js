@@ -932,18 +932,24 @@
                 if (!this.readyState || this.readyState === "loaded" || this.readyState === "complete") {
                     //根据方法名，执行回调方法
                     if (arrFun) {
-                        for (var i = 0; i < arrFun.length; i++) {
-                            var thisFunction = new Function(arrFun[i] + "();");
-                            try {
-                                thisFunction();
-                            } catch (e) {
-                                if (window.console) {
-                                    console.log("该方法不存在！");
-                                } else {
-                                    alert("该方法不存在！");
+                        if(Base.isArray(arrFun)) {
+                            for (var i = 0; i < arrFun.length; i++) {
+                                var thisFunction = new Function(arrFun[i] + "();");
+                                try {
+                                    thisFunction();
+                                } catch (e) {
+                                    if (window.console) {
+                                        console.log("该方法不存在！");
+                                    } else {
+                                        alert("该方法不存在！");
+                                    }
                                 }
-                            }
-                        };
+                            };
+                        }
+                        if(Base.isFunction(arrFun)) {
+                            arrFun();
+                        }
+                            
                     }
                     //ie缓存
                     node.onload = node.onreadystatechange = null;
