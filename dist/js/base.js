@@ -11,6 +11,7 @@
             define(Base);
         } else {
             // script
+            //console.log(window.Base);
             root.Base = root.thisBase = Base;
         }
     }
@@ -114,82 +115,6 @@
         } else {
 
             return elem.style.cssText;
-        }
-    }
-    /**
-     * [localData 操作localSorage]
-     * @fun  setCookie  设置
-     * @fun  getCookie  获取
-     * @fun  clearCookie  删除
-     */
-    Base.cookie = {
-        //取得cookie  
-        getCookie: function(name) {
-            var nameEQ = name + "=";
-            var ca = document.cookie.split(';'); //把cookie分割成组  
-            for (var i = 0; i < ca.length; i++) {
-                var c = ca[i]; //取得字符串  
-                while (c.charAt(0) == ' ') { //判断一下字符串有没有前导空格  
-                    c = c.substring(1, c.length); //有的话，从第二位开始取  
-                }
-                if (c.indexOf(nameEQ) == 0) { //如果含有我们要的name  
-                    return unescape(c.substring(nameEQ.length, c.length)); //解码并截取我们要值  
-                }
-            }
-            return false;
-        },
-        //清除cookie  
-        clearCookie: function(name) {
-            this.setCookie(name, "", -1);
-        },
-        //设置cookie  
-        setCookie: function(name, value, seconds) {
-            seconds = seconds || 0; //seconds有值就直接赋值，没有为0，这个根php不一样。  
-            var expires = "";
-            if (seconds != 0) { //设置cookie生存时间  
-                var date = new Date();
-                date.setTime(date.getTime() + (seconds * 1000));
-                expires = "; expires=" + date.toGMTString();
-            }
-            document.cookie = name + "=" + escape(value) + expires + "; path=/"; //转码并赋值  
-        }
-    }
-    /**
-     * [localData 操作localSorage]
-     * @fun  set  设置
-     * @fun  get  获取
-     * @fun  remove  删除
-     */
-    Base.localData = {
-        isLocalStorage: window.localStorage ? true : false,
-        set: function(key, value) {
-            if (this.isLocalStorage) {
-                try {
-                    window.localStorage.setItem(key, value);
-                } catch (oException) {
-                    if (oException.name == 'QuotaExceededError') {
-                        console.log('已经超(www.111cn.net)出本地存储限定大小！');
-                        // 可进行超出限定大小之后的操作，如下面可以先清除记录，再次保存
-                        Base.localData.clear();
-                        window.localStorage.setItem(key, value);
-                    }
-                }
-            }
-        },
-        get: function(key) {
-            if (this.isLocalStorage) {
-                return window.localStorage.getItem(key);
-            }
-        },
-        remove: function(key) {
-            if (this.isLocalStorage) {
-                window.llocalStorage.removeItem(key);
-            }
-        },
-        clear: function() {
-            if (this.isLocalStorage) {
-                window.llocalStorage.clear();
-            }
         }
     }
     /**
@@ -640,6 +565,11 @@
         }
         return true;
     }
+    /**
+     * [getType 返回对象的type]
+     * @param  {[type]} obj
+     * @return {[type]}  
+     */
     Base.getType = function(obj) {
         return Object.prototype.toString.call(obj).match(/\s([a-z|A-Z]+)/)[1].toLowerCase();
     };
@@ -825,9 +755,6 @@
             }
         }
     }
-    EventList = {
-
-    }
     /**
      * [trim 去除首尾空格]
      * @param  {[type]} str [str]
@@ -882,11 +809,12 @@
      */
     Base.ready = function() {
         var funs = arguments;
+            // readyRE = /complete|loaded|interactive/;
         //是否依赖require
         var require = require || false
         if (require) {
             runJs();
-        } else if (document.readyState === "complete") { //已加载完成
+        } else if (document.readyState == "complete") { //已加载完成
             runJs();
         } else {
             if (document.addEventListener) {
@@ -1065,7 +993,8 @@
                     disY = nowY - params.currentY;
                 switch (swipeFlag) {
                     case "swipeLeft":
-                        if (disX > 0) return;
+                        if (disX >= 0) return;
+                        console.log(disX);
                         isMove = true;
                         disY = 0;
                         if (!isSwipe) {
@@ -1073,7 +1002,7 @@
                         }
                         break;
                     case "swipeRight":
-                        if (disX < 0) return;
+                        if (disX <= 0) return;
                         disY = 0;
                         isMove = true;
                         if (!isSwipe) {
@@ -1081,7 +1010,7 @@
                         }
                         break;
                     case "swipeUp":
-                        if (disY > 0) return;
+                        if (disY >= 0) return;
                         isMove = true;
                         disX = 0;
                         if (!isSwipe) {
@@ -1089,7 +1018,7 @@
                         }
                         break;
                     case "swipeDown":
-                        if (disY < 0) return;
+                        if (disY <= 0) return;
                         disX = 0;
                         isMove = true;
                         if (!isSwipe) {
@@ -1287,5 +1216,12 @@
         }
         // 返回结果
         return target;
+    }
+    Base.timer = function(fn,time) {
+        console.log(fn);
+        var timer = setTimeout(function() {
+            fn();
+            clearTimeout(timer);
+        }, time);
     }
 });

@@ -36,6 +36,9 @@ var div = document.getElementById('div00001');
 function showMess2() {
 	alert(222);
 }
+// console.log(div);
+// console.log(div.events);
+// console.dir(div);
 // function showMess3() {
 // 	alert(333);
 // }
@@ -56,7 +59,7 @@ function showMess2() {
 //Base.event(divClick,"myEvent",showMess1);
 // console.dir(divClick);
 //Base.fireEvent(divClick,"myEvent");
-Base.event(divClick,div,"myEvent",showMess2);
+Base.event(divClick,"myEvent",showMess2);
 //Base.event(divClick,"myEvent",showMess1);
 //console.dir(divClick);
 Base.fireEvent(divClick,"myEvent");
