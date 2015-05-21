@@ -493,20 +493,20 @@
         //运动开始          
         var isAllCompleted = true; //假设全部运动都完成了
         var recdJson = {};
-        for (attr in json) {
+        for (var attr in json) {
             switch (attr) {
                 case 'opacity':
-                    attrValue = Math.round(parseFloat(Base.getStyle(obj, attr)) * 100);
+                    var attrValue = Math.round(parseFloat(Base.getStyle(obj, attr)) * 100);
                     recdJson[attr] = attrValue;
                     break;
                 default:
-                    attrValue = parseInt(Base.getStyle(obj, attr));
+                    var attrValue = parseInt(Base.getStyle(obj, attr));
                     recdJson[attr] = attrValue;
             }
         };
 
         function timer() {
-            for (attr in json) {
+            for (var attr in json) {
                 var attrValue = 0,
                     nowVal = json[attr],
                     recdVal = recdJson[attr];
@@ -745,7 +745,7 @@
                             classList = elem.getElementsByTagName('*'),
                             classListLen = classList.length;
                         for (var i = 0; i < classListLen; i++) {
-                            classListTagName = classList[i].tagName.toLowerCase();
+                            var classListTagName = classList[i].tagName.toLowerCase();
                             if (classList[i] == theTag && classListTagName == targetTagName) {
                                 fn.call(theTag, theEvent); //fn方法应用到theTag上面
                             }
@@ -902,9 +902,10 @@
      * @return {[type]}      [description]
      */
     Base.transform = function(elem) {
-        var transform = Base.getStyle(elem, "transform"),
+        var transform = Base.getStyle(elem, "transform") || Base.getStyle(elem, "-webkit-transform"),
             transformX,
             transformY,
+            transformZ,
             transformArr = [];
         if (transform == "none" || transform == undefined) {
             transformArr.push(0);
@@ -958,8 +959,7 @@
             currentY: 0,
             flag: false
         };
-
-        var recDate, nowDate, isTap, displacement, speed, isSwipe = false,
+        var recDate, nowDate, displacement, speed, isSwipe = false,
             isMove = false;
         if (Base.isFunction(jsonOpt)) {
             fun = jsonOpt;
@@ -1000,7 +1000,7 @@
                 switch (swipeFlag) {
                     case "swipeLeft":
                         if (disX >= 0) return;
-                        console.log(disX);
+                        //console.log(disX);
                         isMove = true;
                         disY = 0;
                         if (!isSwipe) {
@@ -1048,7 +1048,7 @@
         var setOpt = function(elem, disX, disY) {
             var finLeft = parseInt(params.left) + disX,
                 finRight = parseInt(params.top) + disY;
-            elem.style.transform = "matrix(1, 0, 0, 1, " + finLeft + ", " + finRight + ")";
+            elem.style.msTransform = elem.style.MozTransform = elem.style.OTransform = elem.style.webkitTransform = elem.style.transform = "matrix(1, 0, 0, 1, " + finLeft + ", " + finRight + ")";
         }
         var delEvent = function() {
             Base.removeEvent(document, "touchmove", dragMove);
@@ -1098,8 +1098,6 @@
                             clearTimeout(animate);
                             isMove = false;
                         }, speed);
-                    } else {
-                        fun.call(elem, event);
                     }
                     break;
                 case "swipeRight":
@@ -1111,8 +1109,6 @@
                             clearTimeout(animate);
                             isMove = false;
                         }, speed);
-                    } else if (isMove) {
-                        fun.call(elem, event);
                     }
                     break;
                 case "swipeUp":
@@ -1124,8 +1120,6 @@
                             clearTimeout(animate);
                             isMove = false;
                         }, speed);
-                    } else {
-                        fun.call(elem, event);
                     }
                     break;
                 case "swipeDown":
@@ -1137,8 +1131,6 @@
                             clearTimeout(animate);
                             isMove = false;
                         }, speed);
-                    } else {
-                        fun.call(elem, event);
                     }
                     break;
                 default:
@@ -1148,8 +1140,11 @@
             return false;
         }
         var translate = function(elem, speed, distanceX, distanceY) {
-            elem.style.transitionDuration = speed + "ms";
-            elem.style.transform = "matrix(1, 0, 0, 1, " + distanceX + ", " + distanceY + ")";
+              elem.style.webkitTransitionDuration = elem.style.MozTransitionDuration = elem.style.transitionDuration = speed + "ms";
+              elem.style.webkitTransform = elem.style.msTransform = elem.style.MozTransform = elem.style.OTransform = elem.style.transform = "matrix(1, 0, 0, 1, " + distanceX + ", " + distanceY + ")";
+              elem.style.webkitTransform = "matrix(1, 0, 0, 1, " + distanceX + ", " + distanceY + ")";
+            //alert(distanceX);
+            //elem.style.webkitTransform = "translateX(200px)"
         };
         Base.event(elem, "touchstart", dragDown);
         Base.event(elem, "mousedown", dragDown);
@@ -1224,7 +1219,7 @@
         return target;
     }
     Base.timer = function(fn,time) {
-        console.log(fn);
+        //console.log(fn);
         var timer = setTimeout(function() {
             fn();
             clearTimeout(timer);
