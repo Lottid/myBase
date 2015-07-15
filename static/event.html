@@ -17,25 +17,26 @@
 <script type="text/javascript">
 var btnClick = document.getElementById('btnClick'),
     divClick = document.getElementById("div-click");
-// Base.event(btnClick,"click",function() {
+// Base.addEvent(btnClick,"click",function() {
 //  alert("click" + "btnClick");
 // });
-// Base.event(divClick,btnClick,"click",function() {
+// Base.addEvent(divClick,btnClick,"click",function() {
 //     alert("click");
 // });
-// Base.event(divClick,".div0001","click",showMess1);
-// Base.event(divClick,"div","click",showMess1);
+Base.addEvent(divClick,"#div00001","click",showMess2);
+//Base.addEvent(divClick,"div","click",showMess1);
 divClick.innerHTML = '<div class="div0001" id="div00001">11111</div>'+
         			 '<div class="div0001">22222</div>'+
         			 '<div class="div0001">33333</div>'+
         			 '<div class="div0001">44444</div>';
 function showMess1() {
-	alert(111);
+	//alert(111);
 }
 var div = document.getElementById('div00001');
 function showMess2() {
 	alert(222);
 }
+//Base.addEvent(divClick,"click",showMess1);
 // console.log(div);
 // console.log(div.events);
 // console.dir(div);
@@ -45,7 +46,7 @@ function showMess2() {
 // function showMess4() {
 // 	alert(444);
 // }
-// Base.event(divClick,btnClick,"touchstart",function() {
+// Base.addEvent(divClick,btnClick,"touchstart",function() {
 //  alert("click");
 // });
 // var a = {n:1};
@@ -56,13 +57,16 @@ function showMess2() {
 // //console.log(a);
 // console.log(a.x);
 // console.log(b);
-//Base.event(divClick,"myEvent",showMess1);
+//Base.addEvent(divClick,"myEvent",showMess1);
 // console.dir(divClick);
 //Base.fireEvent(divClick,"myEvent");
-Base.event(divClick,"myEvent",showMess2);
-//Base.event(divClick,"myEvent",showMess1);
+//Base.addEvent(divClick,"myEvent",showMess2);
+//Base.addEvent(divClick,"myEvent",showMess1);
 //console.dir(divClick);
-Base.fireEvent(divClick,"myEvent");
+//Base.fireEvent(divClick,"myEvent");
+// (function(i) {
+//     alert(i);
+// })(5)
 </script>
 </body>
 </html>

@@ -9,13 +9,20 @@
 Base.ready(function() {
 	var srcJs = "../dist/js/jquery-1.11.2.js";
 	Base.writePath("js",srcJs,function() {
-		alert($(window).height());
+		//console.log($(window).height());
+		$(".div01").animate({width: "400px", height: '400px'}, 2000)
 	});
+	// Base.writePath("js",srcJs,function() {
+	// 	console.log($(window).width());
+	// });
+	// Base.writePath("js","../dist/js/base.obj.js",function() {
+	// 	//alert($(window).height());
+	// });
 	
 });
 </script>
 </head>
 <body>
-	
+	<div class="div01" style="background:red;width:0px;"></div>
 </body>
 </html>

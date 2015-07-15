@@ -45,35 +45,78 @@ module.exports = function(grunt) {
                 }
             },
             my_target: {
-                files: [
-                    {
-                        expand: true,
-                        //相对路径
-                        cwd: 'dist/',
-                        src: '**/*.css',
-                        dest: 'dest/'
-                    }
-                ]
+                files: [{
+                    expand: true,
+                    //相对路径
+                    cwd: 'dest/',
+                    src: '**/*.css',
+                    dest: 'dest/'
+                }]
             }
         },
+        //移动img，无压缩
         copy: {
             main: {
                 files: [{
-                        flatten:true,
+                        flatten: true,
                         expand: true,
                         src: 'dist/img/**',
-                        dest: 'dest/img/',
+                        dest: 'dest/img-origin/',
                         filter: 'isFile'
                     } // 复制img目录下的所有文件
                 ]
             }
+        },
+        // 配置插件(图片压缩)
+        imagemin: {
+            dynamic: {
+                options: {
+                    optimizationLevel: 7 // png图片优化水平，3是默认值，取值区间0-7
+                },
+                files: [{
+                    expand: true, // 开启动态扩展
+                    cwd: "dist/img/", // 当前工作路径
+                    src: ["**/*.{png,jpg,gif}"], // 要出处理的文件格式(images下的所有png,jpg,gif)
+                    dest: "dest/img/" // 输出目录(直接覆盖原图)
+                }]
+            }
+        },
+        autoprefixer: {
+            options: {
+                browsers: ['last 4 versions','firefox 11','opera 11']
+            },
+            my_target: {
+                files: [{
+                    expand: true,
+                    //相对路径
+                    cwd: 'dist/',
+                    src: '**/*.css',
+                    dest: 'dest/'
+                }]
+            }
+        },
+        watch: {
+            gruntfile: {
+                files: 'Gruntfile.js',
+                tasks: ['jshint:gruntfile'],
+            },
+            src: {
+                files: ['dist/js/**/*.js', 'dist/css/**/*.css', 'dist/img/**/*.{png,jpg,gif}'],
+                tasks: ['default'],
+            }
         }
     });
 
-    grunt.loadNpmTasks('grunt-contrib-uglify');
-    grunt.loadNpmTasks('grunt-contrib-concat');
-    grunt.loadNpmTasks('grunt-contrib-cssmin');
-    grunt.loadNpmTasks('grunt-contrib-copy');
+    grunt.loadNpmTasks('grunt-contrib-uglify');//压缩js
+    grunt.loadNpmTasks('grunt-contrib-concat');//合并
+    grunt.loadNpmTasks('grunt-autoprefixer');//css3前缀
+    grunt.loadNpmTasks('grunt-contrib-cssmin');//压缩css
+    grunt.loadNpmTasks('grunt-contrib-copy');//文件copy
+    grunt.loadNpmTasks('grunt-contrib-imagemin');//图片压缩
+    grunt.loadNpmTasks('grunt-contrib-watch');//
 
-    grunt.registerTask('default', ['concat', 'uglify','cssmin','copy']);
+    //grunt.registerTask('buildCss',  ['autoprefixer', 'cssmin']);
+    //grunt.registerTask('copyImg',  ['copy', 'imagemin']);
+    //grunt.registerTask('bulidJs',  ['concat', 'uglify']);
+    grunt.registerTask('default', ['concat', 'uglify','autoprefixer', 'cssmin', 'copy','imagemin']);
 };
