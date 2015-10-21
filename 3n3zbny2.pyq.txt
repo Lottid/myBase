@@ -1,17 +1,4 @@
 ﻿
-# Please enter the commit message for your changes. Lines starting
-# with '#' will be ignored, and an empty message aborts the commit.
-# On branch master
-# Your branch is up-to-date with 'origin/master'.
-#
-# Changes to be committed:
-	new file:   .project
-	new file:   ball.html
-	new file:   funDrag.html
-	new file:   funParabola.html
-	new file:   js/base.js
-	new file:   js/jquery-1.11.2.js
-	new file:   move.html
-	new file:   unique.html
+
 
 
