@@ -20,6 +20,7 @@
      * @fun  getCookie  获取
      * @fun  clearCookie  删除
      */
+    dom.getAttribute("name")
     BaseObj.cookie = {
         //取得cookie  
         getCookie: function(name) {
